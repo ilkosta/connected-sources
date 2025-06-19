@@ -20,6 +20,10 @@ public class Team {
         members.removeIf(member -> member.getUser().equals(user));
     }
 
+    public void removeMember(String uid) {
+        members.removeIf(member -> member.getUser().getId().equals(uid));
+    }
+
     public Set<TeamMember> getMembers() {
         return Collections.unmodifiableSet(members);
     }
