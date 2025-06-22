@@ -1,32 +1,50 @@
 package org.connected_sources.user;
 
+import com.github.slugify.Slugify;
+import org.connected_sources.shared.*;
 
-import org.connected_sources.shared.Producer;
-import org.connected_sources.shared.User;
-import org.connected_sources.shared.UserRole;
-import org.connected_sources.shared.TenantLifecycleManager;
-
+import java.time.Instant;
 import java.util.*;
 
 public class ProducerService {
 
     private final Map<String, Producer> producers = new HashMap<>();
+    private final Map<String, ProducerRegistration> pending = new HashMap<>();
     private final Map<String, User> managers = new HashMap<>();
+
     private final TenantLifecycleManager tenantManager;
+    private final NotificationService notificationService;
 
-    public ProducerService(TenantLifecycleManager tenantManager) {
+    public ProducerService(TenantLifecycleManager tenantManager, NotificationService notificationService) {
         this.tenantManager = tenantManager;
+        this.notificationService = notificationService;
     }
 
-    public void registerProducer(String id, String name, String email) {
-        Producer producer = new Producer(id, name, email);
-        producers.put(id, producer);
-        tenantManager.createTenant(id);
+    public ProducerRegistration register(String name, String email, String legalHQ) {
+        final Slugify slg = Slugify.builder().lowerCase(true).build();
+        String producerId = slg.slugify(name);
+        String registrationId = UUID.randomUUID().toString();
+        Instant now = Instant.now();
+
+        ProducerRegistration reg = new ProducerRegistration(registrationId, producerId, name, email, legalHQ, now);
+        pending.put(registrationId, reg);
+
+        String link = "https://frontend/register/" + producerId + "/" + registrationId;
+        notificationService.sendRegistrationEmail(email, name, link);
+
+        return reg;
     }
 
-    public void completeRegistration(String producerId, User manager) {
-        if (!producers.containsKey(producerId)) throw new IllegalArgumentException("Producer not found");
-        managers.put(manager.getId(), manager);
+    public void completeRegistration(String producerId, String registrationId, User caller) {
+        ProducerRegistration reg = pending.get(registrationId);
+        if (reg == null) throw new RegistrationNotFoundException();
+        if (reg.isExpired()) throw new RegistrationExpiredException();
+        if (!reg.getProducerId().equals(producerId)) throw new IllegalArgumentException("Mismatched producer Id");
+
+        Producer producer = new Producer(producerId, reg.getName(), reg.getInstitutionalEmail(), reg.getLegalHeadquarters());
+        producers.put(producerId, producer);
+        tenantManager.createTenant(producerId);
+        managers.put(caller.getId(), caller);
     }
 
     public boolean isRegistered(String id) {
@@ -39,9 +57,5 @@ public class ProducerService {
 
     public User getManager(String userId) {
         return managers.get(userId);
-    }
-
-    public boolean exists(String producerId) {
-        return producers.containsKey(producerId);
     }
 }

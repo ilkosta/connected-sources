@@ -14,6 +14,8 @@ plugins {
 dependencies {
     // Core di Spring (NO spring-boot!)
     implementation("org.springframework:spring-context")
+    // https://mvnrepository.com/artifact/com.github.slugify/slugify
+    implementation("com.github.slugify:slugify:3.0.7")
 
     // Moduli interni
     implementation(project(":backend-shared"))

@@ -18,18 +18,29 @@ public class ProducerServiceTest {
 
     @Mock
     private TenantLifecycleManager tenantManager;
+    @Mock
+    private NotificationService notificationService;
     @InjectMocks
     private ProducerService producerService;
 
     @Test
     public void testRegisterAndFetchProducer() {
-        String email = "email";
-        String name = "pippo";
-        String pid = "p1";
-        producerService.registerProducer(pid, name, email);
+        final String email = "email";
+        final String name = "pippo";
+        final String pid = "p1";
+        final String lHQ = "sede legale";
+        ProducerRegistration r = producerService.register(name, email,lHQ);
 
-        assertTrue(producerService.exists(pid));
-        Producer p = producerService.getProducer(pid);
+        assertFalse(producerService.isRegistered(r.getProducerId()));
+        Producer p = producerService.getProducer(r.getProducerId());
+        assertNull(p);
+
+        User u = new User(name,email);
+        producerService.completeRegistration(r.getProducerId(),r.getRegistrationId(), u);
+        assertTrue(producerService.isRegistered(r.getProducerId()));
+
+        p = producerService.getProducer(r.getProducerId());
+        assertNotNull(p);
         assertEquals(name, p.getName());
         assertEquals(email, p.getInstitutionalEmail());
     }
@@ -61,29 +72,39 @@ public class ProducerServiceTest {
 
     @Test
     public void testRegisterProducerCreatesTenantAndStoresProducer() {
-        String id = "p1";
-        String name = "pippo";
-        String email = "email";
 
-        producerService.registerProducer(id,name,email);
-        assertTrue(producerService.isRegistered(id));
-        Producer p = producerService.getProducer(id);
+        final String name = "pippo";
+        final String email = "email";
+        final String lhq = "sede legale";
+
+        ProducerRegistration r = producerService.register(name,email, lhq);
+        assertFalse(producerService.isRegistered(r.getProducerId()));
+        Producer p = producerService.getProducer(r.getProducerId());
+        assertNull(p);
+
+        User u = new User(name,email);
+        producerService.completeRegistration(r.getProducerId(),r.getRegistrationId(), u);
+        assertTrue(producerService.isRegistered(r.getProducerId()));
+
+        p = producerService.getProducer(r.getProducerId());
+        assertNotNull(p);
         assertEquals(name, p.getName());
-        verify(tenantManager).createTenant(id);
+        verify(tenantManager).createTenant(r.getProducerId());
     }
 
     @Test
     public void testCompleteRegistrationStoresManager() {
-        String id = "p1";
-        String name = "pippo";
-        String email = "email";
 
-        String u1 = "user1";
-        String u1email = "email1";
-//        UserRole role = UserRole.MANAGER;
-        producerService.registerProducer(id,name,email);
+        final String name = "pippo";
+        final String email = "email";
+        final String hq = "sede legale";
+
+        final String u1 = "user1";
+        final String u1email = "email1";
+
+        ProducerRegistration r = producerService.register(name,email,hq);
         User u = new User(u1, u1email);
-        producerService.completeRegistration(id, u);
+        producerService.completeRegistration(r.getProducerId(), r.getRegistrationId(), u);
         assertEquals(u, producerService.getManager(u1));
     }
 }

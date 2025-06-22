@@ -69,7 +69,8 @@ subprojects {
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
         testImplementation("org.springframework:spring-test")
 
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
+        testImplementation(platform("org.junit:junit-bom:5.13.1"))
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     }

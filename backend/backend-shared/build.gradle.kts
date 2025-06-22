@@ -1,8 +1,12 @@
 plugins {
-    id("org.springframework.boot")
+    id("java-library")
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 dependencies {
-//    implementation("org.springframework.boot:spring-boot-starter")
-//    implementation("com.fasterxml.jackson.core:jackson-databind")
+    // Core di Spring (NO spring-boot!)
+    implementation("org.springframework:spring-context")
+
+    // Dipendenze di test
+    testImplementation("org.springframework:spring-test")
 }
