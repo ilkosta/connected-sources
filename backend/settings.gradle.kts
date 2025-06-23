@@ -1,5 +1,5 @@
 rootProject.name = "backend"
-include(//"backend-api",
+include("backend-api",
     "backend-shared",
     "backend-core:backend-core-user",
     "backend-core:backend-core-content",

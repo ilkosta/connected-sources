@@ -55,7 +55,11 @@ subprojects {
 //        }
 //    }
 
+    // con pluginManagement
     dependencyManagement {
+        repositories {
+            mavenCentral()
+        }
         imports {
             mavenBom("org.springframework:spring-framework-bom:6.2.0")
         }
