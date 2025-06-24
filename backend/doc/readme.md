@@ -5,17 +5,24 @@
 
 ## gestione dei tenant
 
+### 🔐 Requisiti Non Funzionali legati alle scelte di gestione dei tenant
 
+| Requisito   | Dettaglio                                                                            |
+| ----------- |--------------------------------------------------------------------------------------|
+| Isolamento  | Ogni tenant opera su file system e/o database dedicati                               |
+| Scalabilità | I moduli sono indipendenti e gestiti per tenant                                      |
+| Sicurezza   | Validazione e contesto tenant obbligatorio                                           |
+| Logging     | Ogni operazione è tracciata nel singolo tenant (sia nella versione db che filesystem)|
 
 ## perché struttura multi modulo
 
 * divisione delle responsabilità tra moduli
 ```
-  ├── backend-api/                      # Modulo gateway REST: espone le API
+  ├── backend-api/                     # Modulo gateway REST: espone le API
   ├── backend-content/                 # Modulo funzionalità gestione contenuti
   ├── backend-tenant/                  # Modulo gestione tenant e provisioning
   ├── backend-user/                    # Modulo gestione utenti e registrazione
-  ├── backend-notification/           # Modulo gestione notifiche e report
+  ├── backend-notification/            # Modulo gestione notifiche e report
   ├── backend-infra/                   # Integrazioni tecniche: Git, YAML, QR, DB
   ├── backend-shared/                  # Entità, enum, utilità comuni ...
   ...

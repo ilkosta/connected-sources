@@ -2,24 +2,36 @@ package org.connected_sources.tenant;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.connected_sources.tenant.TenantContextHolder;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
+@Component
 public class TenantContextFilter implements Filter {
 
-  public static final String HEADER = "X-Tenant-ID";
+  private final TenantContextHolder tenantContextHolder;
+
+  public TenantContextFilter(TenantContextHolder tenantContextHolder) {
+    this.tenantContextHolder = tenantContextHolder;
+  }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
           throws IOException, ServletException {
-
     try {
-      String tenantId = ((HttpServletRequest) request).getHeader(HEADER);
+      String tenantId = extractTenantId((HttpServletRequest) request);
       if (tenantId != null && !tenantId.isBlank()) {
-        TenantContextHolder.setTenantId(tenantId);
+        tenantContextHolder.setTenantId(tenantId);
       }
       chain.doFilter(request, response);
     } finally {
-      TenantContextHolder.clear(); // Clean-up always
+      tenantContextHolder.clear(); // cleanup in all cases
     }
+  }
+
+  private String extractTenantId(HttpServletRequest request) {
+    // Simplified example: header-based
+    return request.getHeader("X-Tenant-ID");
   }
 }

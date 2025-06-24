@@ -1,5 +1,6 @@
 plugins {
     id("java-library")
+    id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -8,6 +9,7 @@ dependencies {
     implementation(project(":backend-core:backend-core-user"))
     implementation(project(":backend-shared"))
 
+    implementation("org.springframework.boot:spring-boot-starter")
 //    implementation("org.springframework.boot:spring-boot-starter-web")
 //    implementation("org.springframework.boot:spring-boot-starter-validation")
 
