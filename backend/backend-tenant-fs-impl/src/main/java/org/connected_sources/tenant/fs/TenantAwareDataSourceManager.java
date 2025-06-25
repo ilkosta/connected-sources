@@ -2,10 +2,9 @@ package org.connected_sources.tenant.fs;
 
 import org.connected_sources.tenant.TenantContextHolder;
 import org.connected_sources.tenant.TenantDatasourceRegistry;
-import org.connected_sources.tenant.TenantLifecycleManager;
+import org.connected_sources.shared.TenantLifecycleManager;
 
 import javax.sql.DataSource;
-import java.util.Objects;
 
 public class TenantAwareDataSourceManager {
 

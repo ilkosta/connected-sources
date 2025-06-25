@@ -2,8 +2,7 @@ package org.connected_sources.tenant.fs;
 
 import org.connected_sources.tenant.TenantContextHolder;
 import org.connected_sources.tenant.TenantDatasourceRegistry;
-import org.connected_sources.tenant.TenantLifecycleManager;
-import org.junit.jupiter.api.BeforeEach;
+import org.connected_sources.shared.TenantLifecycleManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

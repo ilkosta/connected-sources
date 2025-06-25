@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TenantContextHolderTest {
 
+  private final TenantContextHolder holder = new TenantContextHolder();
   @Test
   void testSetAndClearTenantId() {
-    TenantContextHolder holder = new TenantContextHolder();
     assertFalse(holder.isSet());
     holder.setTenantId("tenantA");
     assertEquals("tenantA", holder.getTenantId());
@@ -29,11 +29,25 @@ class TenantContextHolderTest {
 
     Mockito.when(request.getHeader("X-Tenant-ID")).thenReturn(null);
 
-    TenantContextHolder holder = new TenantContextHolder();
     TenantContextFilter filter = new TenantContextFilter(holder);
 
     filter.doFilter(request, response, chain);
 
     assertFalse(holder.isSet()); // 🧪 Nessun tenant impostato
   }
+
+
+
+    @Test
+    void shouldStoreAndRetrieveTenantId() {
+      holder.setTenantId("tenantA");
+      assertEquals("tenantA", holder.getTenantId());
+    }
+
+    @Test
+    void shouldClearTenantId() {
+      holder.setTenantId("tenantA");
+      holder.clear();
+      assertNull(holder.getTenantId());
+    }
 }

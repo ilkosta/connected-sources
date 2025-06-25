@@ -43,7 +43,7 @@ public class ProducerService {
 
         Producer producer = new Producer(producerId, reg.getName(), reg.getInstitutionalEmail(), reg.getLegalHeadquarters());
         producers.put(producerId, producer);
-        tenantManager.createTenant(producerId);
+        tenantManager.provisionTenant(producerId);
         managers.put(caller.getId(), caller);
     }
 

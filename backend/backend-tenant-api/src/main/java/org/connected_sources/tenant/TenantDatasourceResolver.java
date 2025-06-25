@@ -1,16 +1,16 @@
 package org.connected_sources.tenant;
 
-/**
- * Interfaccia per risolvere dinamicamente il path o l'identificativo del datasource
- * associato a un tenant specifico.
- */
+import javax.sql.DataSource;
+
 public interface TenantDatasourceResolver {
 
   /**
-   * Restituisce il percorso assoluto del file/datasource associato al tenant.
+   * Creates and returns a DataSource instance for the given tenantId.
    *
-   * @param tenantId identificativo univoco del tenant
-   * @return path assoluto al file SQLite, o stringa con URL di connessione
+   * @param tenantId The unique identifier for the tenant
+   * @return A configured, tenant-specific DataSource
+   * @throws IllegalArgumentException if tenantId is null or invalid
+   * @throws RuntimeException if DataSource creation fails
    */
-  String resolvePathForTenant(String tenantId);
+  DataSource createDataSource(String tenantId);
 }
