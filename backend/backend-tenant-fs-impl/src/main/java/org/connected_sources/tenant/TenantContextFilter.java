@@ -2,12 +2,11 @@ package org.connected_sources.tenant;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.connected_sources.tenant.TenantContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
+@Component // <-- autodiscover
 public class TenantContextFilter implements Filter {
 
   private final TenantContextHolder tenantContextHolder;
@@ -19,15 +18,23 @@ public class TenantContextFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
           throws IOException, ServletException {
-    try {
-      String tenantId = extractTenantId((HttpServletRequest) request);
-      if (tenantId != null && !tenantId.isBlank()) {
-        tenantContextHolder.setTenantId(tenantId);
-      }
-      chain.doFilter(request, response);
-    } finally {
-      tenantContextHolder.clear(); // cleanup in all cases
-    }
+//    try {
+//      String tenantId = extractTenantId((HttpServletRequest) request);
+//      System.out.println("⛳ Filtering request, setting tenantId");
+//      if (tenantId != null && !tenantId.isBlank()) {
+//        tenantContextHolder.setTenantId(tenantId);
+//        System.out.println("TenantContextFilter → set tenantId = " + tenantId);
+//      }
+//      chain.doFilter(request, response);
+//    } finally {
+//      tenantContextHolder.clear(); // cleanup in all cases
+//    }
+
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    String tenantId = httpRequest.getHeader("X-Producer-Id");
+    System.out.println("⛳ Filtering request, setting tenantId: " + tenantId);
+    tenantContextHolder.setTenantId(tenantId);
+    chain.doFilter(request, response);
   }
 
   private String extractTenantId(HttpServletRequest request) {

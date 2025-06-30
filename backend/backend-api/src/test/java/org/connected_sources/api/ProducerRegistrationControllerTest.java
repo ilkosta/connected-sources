@@ -1,7 +1,7 @@
 package org.connected_sources.api;
 
-import org.connected_sources.WebTestConfig;
 import org.connected_sources.user.ProducerRegistration;
+import org.connected_sources.testconfig.WebTestConfig;
 import org.connected_sources.shared.User;
 import org.connected_sources.user.ProducerService;
 import org.connected_sources.user.RegistrationExpiredException;
