@@ -4,6 +4,7 @@ import org.connected_sources.api.BackendApiApplication;
 
 import org.connected_sources.tenant.TenantContextFilter;
 import org.connected_sources.tenant.TenantContextHolder;
+import org.connected_sources.testconfig.DebugConfig;
 import org.connected_sources.testconfig.StubBeans;
 import org.connected_sources.testconfig.TenantFsBeanConfig;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
                 BackendApiApplication.class,
 //                TenantDebugController.class,
                 TenantFsBeanConfig.class,
-                StubBeans.class
+                TenantContextFilter.class,
+                StubBeans.class,
+                DebugConfig.class  // include the filter registration
         },
         properties = {
                 "spring.main.allow-bean-definition-overriding=true",
