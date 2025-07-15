@@ -2,6 +2,8 @@ package org.connected_sources.tenant;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class TenantContextHolder {
 
@@ -15,8 +17,8 @@ public class TenantContextHolder {
     context.set(tenantId);
   }
 
-  public String getTenantId() {
-    return context.get();
+  public Optional<String> getTenantId() {
+    return Optional.ofNullable(context.get());
   }
 
   public void clear() {

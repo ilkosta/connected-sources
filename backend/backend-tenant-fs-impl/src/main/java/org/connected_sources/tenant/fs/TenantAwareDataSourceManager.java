@@ -23,11 +23,13 @@ public class TenantAwareDataSourceManager {
   }
 
   public DataSource resolveDataSource() {
-    String tenantId = tenantContextHolder.getTenantId();
-    if (tenantId == null) {
-      throw new IllegalStateException("Tenant context not set");
-    }
-    return resolveDataSourceForTenant(tenantId);
+    String tenantId = tenantContextHolder.getTenantId()
+                                         .orElseThrow(() -> new IllegalStateException("No tenant set"));
+    DataSource cached = tenantDatasourceRegistry.getDataSource(tenantId);
+    if (cached != null) return cached;
+
+    tenantLifecycleManager.provisionTenant(tenantId);
+    return tenantDatasourceRegistry.getDataSource(tenantId);
   }
 
   private DataSource resolveDataSourceForTenant(String tenantId) {

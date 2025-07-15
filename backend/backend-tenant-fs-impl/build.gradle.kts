@@ -12,6 +12,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework:spring-jdbc")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
 
     // SQLite JDBC driver

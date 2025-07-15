@@ -55,7 +55,7 @@ public class ProducerOnboardingTest {
     User manager = producerService.getManager("u1");
     assertEquals(user.getEmail(), manager.getEmail());
 
-    verify(tenantManager, times(1)).createTenant(reg.getProducerId());
+    verify(tenantManager, times(1)).provisionTenant(reg.getProducerId());
   }
 
   @Test

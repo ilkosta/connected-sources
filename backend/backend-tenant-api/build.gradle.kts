@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     // Moduli interni
-    implementation(project(":backend-core:backend-core-user"))
+//    implementation(project(":backend-core:backend-core-user"))
     implementation(project(":backend-shared"))
 
     implementation("org.springframework.boot:spring-boot-starter")

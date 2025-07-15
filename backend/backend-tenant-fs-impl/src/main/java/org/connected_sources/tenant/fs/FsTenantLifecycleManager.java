@@ -2,8 +2,12 @@ package org.connected_sources.tenant.fs;
 
 import org.connected_sources.tenant.TenantDatasourceRegistry;
 import org.connected_sources.shared.TenantLifecycleManager;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class FsTenantLifecycleManager implements TenantLifecycleManager {
@@ -22,7 +26,17 @@ public class FsTenantLifecycleManager implements TenantLifecycleManager {
             throw new IllegalArgumentException("tenantId must not be null or blank");
         }
 
-        DataSource dataSource = datasourceResolver.createDataSource(tenantId);
-        registry.registerDataSource(tenantId, dataSource);
+        Path dbFile = Path.of("/base-directory", tenantId, "datasource.sqlite");
+        try {
+            Files.createDirectories(dbFile.getParent());
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+        ds.setDriverClassName("org.sqlite.JDBC");
+        ds.setUrl("jdbc:sqlite:" + dbFile.toAbsolutePath());
+
+        registry.registerDataSource(tenantId, ds);
     }
 }

@@ -89,7 +89,7 @@ public class ProducerServiceTest {
         p = producerService.getProducer(r.getProducerId());
         assertNotNull(p);
         assertEquals(name, p.getName());
-        verify(tenantManager).createTenant(r.getProducerId());
+        verify(tenantManager).provisionTenant(r.getProducerId());
     }
 
     @Test
