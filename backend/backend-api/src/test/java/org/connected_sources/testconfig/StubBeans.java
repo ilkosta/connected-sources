@@ -1,6 +1,6 @@
 package org.connected_sources.testconfig;
 
-import org.connected_sources.user.ProducerService;
+import org.connected_sources.core.user.ProducerService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 

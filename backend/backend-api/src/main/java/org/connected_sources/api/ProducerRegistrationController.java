@@ -1,10 +1,10 @@
 package org.connected_sources.api;
 
 import org.connected_sources.shared.*;
-import org.connected_sources.user.ProducerRegistration;
-import org.connected_sources.user.ProducerService;
-import org.connected_sources.user.RegistrationExpiredException;
-import org.connected_sources.user.RegistrationNotFoundException;
+import org.connected_sources.core.user.ProducerRegistration;
+import org.connected_sources.core.user.ProducerService;
+import org.connected_sources.core.user.RegistrationExpiredException;
+import org.connected_sources.core.user.RegistrationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

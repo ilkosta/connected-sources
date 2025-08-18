@@ -1,4 +1,4 @@
-package org.connected_sources.user;
+package org.connected_sources.core.user;
 
 import com.github.slugify.Slugify;
 import org.connected_sources.shared.*;

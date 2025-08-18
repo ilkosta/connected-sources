@@ -1,4 +1,4 @@
-package org.connected_sources.user;
+package org.connected_sources.core.user;
 
 import org.connected_sources.shared.*;
 import org.junit.jupiter.api.Assertions;

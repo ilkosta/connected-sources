@@ -1,4 +1,4 @@
-package org.connected_sources.user;
+package org.connected_sources.core.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

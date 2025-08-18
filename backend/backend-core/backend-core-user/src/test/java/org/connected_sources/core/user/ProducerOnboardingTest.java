@@ -1,4 +1,4 @@
-package org.connected_sources.user;
+package org.connected_sources.core.user;
 
 import org.connected_sources.shared.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import org.connected_sources.shared.*;
 
 public class ProducerOnboardingTest {
 

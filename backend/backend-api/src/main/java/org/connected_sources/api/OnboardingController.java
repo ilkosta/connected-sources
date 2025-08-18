@@ -2,8 +2,8 @@ package org.connected_sources.api;
 
 import jakarta.validation.Valid;
 import org.connected_sources.api.dto.OnboardingRequest;
-import org.connected_sources.user.CreateUserAndProducerCommand;
-import org.connected_sources.user.OnboardingService;
+import org.connected_sources.core.user.CreateUserAndProducerCommand;
+import org.connected_sources.core.user.OnboardingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

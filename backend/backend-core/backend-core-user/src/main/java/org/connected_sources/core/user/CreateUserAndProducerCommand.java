@@ -1,4 +1,4 @@
-package org.connected_sources.user;
+package org.connected_sources.core.user;
 
 public class CreateUserAndProducerCommand {
   private final String producerName;
