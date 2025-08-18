@@ -1,7 +1,7 @@
 plugins {
     id("java-library")
-    id("org.springframework.boot") version "3.5.0"
-    id("io.spring.dependency-management") version "1.1.7"
+//    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 dependencies {
@@ -17,5 +17,9 @@ dependencies {
     testImplementation("org.springframework:spring-test")
     // implementestImplementationtation("org.springframework.boot:spring-boot-starter-test")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    // Dipendenze di test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+
 }
+tasks.test { useJUnitPlatform() }

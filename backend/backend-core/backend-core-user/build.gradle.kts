@@ -1,5 +1,5 @@
 plugins {
-    id("java-library")
+//    id("java-library")
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -27,10 +27,9 @@ dependencies {
     // Moduli interni
     implementation(project(":backend-shared"))
 
-    // Dipendenze di test
-    testImplementation("org.springframework:spring-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
-
+tasks.test { useJUnitPlatform() }
 
 //java {
 //    sourceCompatibility = JavaVersion.VERSION_21

@@ -1,7 +1,9 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+
 plugins {
-    java
-    id("org.springframework.boot") version "3.5.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot") version "3.5.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+    id("java") // or java-library if needed globally
 }
 
 allprojects {
@@ -13,17 +15,6 @@ allprojects {
     }
 }
 
-//java {
-//    toolchain {
-//        languageVersion = JavaLanguageVersion.of(21)
-//    }
-//}
-//
-//configurations {
-//    compileOnly {
-//        extendsFrom(configurations.annotationProcessor.get())
-//    }
-//}
 
 repositories {
     mavenCentral()
@@ -31,21 +22,16 @@ repositories {
 
 subprojects {
     apply(plugin = "java-library")
-//    apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
 
     repositories {
         mavenCentral()
+        maven { url = uri("https://repo.spring.io/release") }
     }
-
-//    java {
-//        sourceCompatibility = JavaVersion.VERSION_21
-//        targetCompatibility = JavaVersion.VERSION_21
-//    }
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(24)
         }
     }
 
@@ -55,19 +41,23 @@ subprojects {
 //        }
 //    }
 
-    // con pluginManagement
-    dependencyManagement {
-        repositories {
-            mavenCentral()
-        }
+//    // con pluginManagement
+//    dependencyManagement {
+//        imports {
+////            mavenBom("org.springframework:spring-framework-bom:6.2.0")
+//            mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.0")
+//        }
+//    }
+
+    // Kotlin DSL form of `dependencyManagement { ... }`
+    extensions.configure<DependencyManagementExtension> {
         imports {
-            mavenBom("org.springframework:spring-framework-bom:6.2.0")
+            mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.0")
         }
     }
 
     dependencies {
         // Test con JUnit 5 e Mockito
-
         testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
         testImplementation("org.mockito:mockito-core:5.18.0")
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
@@ -87,4 +77,6 @@ subprojects {
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
+
+
 }
