@@ -1,6 +1,10 @@
 karate.jar
-
-
+gradle
+gradlew
+gradlew.bat
+.gradle
+build
+*.7z
 
 # Created by https://www.toptal.com/developers/gitignore/api/gradle,java,intellij,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle,java,intellij,maven

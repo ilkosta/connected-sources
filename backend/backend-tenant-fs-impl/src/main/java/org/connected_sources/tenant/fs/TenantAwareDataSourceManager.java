@@ -1,6 +1,6 @@
 package org.connected_sources.tenant.fs;
 
-import org.connected_sources.tenant.TenantContextHolder;
+import org.connected_sources.shared.context.TenantContextHolder;
 import org.connected_sources.tenant.TenantDatasourceRegistry;
 import org.connected_sources.shared.TenantLifecycleManager;
 
@@ -23,13 +23,14 @@ public class TenantAwareDataSourceManager {
   }
 
   public DataSource resolveDataSource() {
-    String tenantId = tenantContextHolder.getTenantId()
-                                         .orElseThrow(() -> new IllegalStateException("No tenant set"));
+    String tenantId = tenantContextHolder.get().tenantId();
+//                                         .orElseThrow(() -> new IllegalStateException("No tenant set"));
     DataSource cached = tenantDatasourceRegistry.getDataSource(tenantId);
     if (cached != null) return cached;
-
-    tenantLifecycleManager.provisionTenant(tenantId);
-    return tenantDatasourceRegistry.getDataSource(tenantId);
+    else {
+      tenantLifecycleManager.provisionTenant(tenantId);
+      return tenantDatasourceRegistry.getDataSource(tenantId);
+    }
   }
 
   private DataSource resolveDataSourceForTenant(String tenantId) {

@@ -3,7 +3,7 @@ package org.connected_sources.api.e2e;
 import org.connected_sources.api.BackendApiApplication;
 
 import org.connected_sources.config.TestSecurityConfig;
-import org.connected_sources.tenant.TenantContextFilter;
+//import org.connected_sources.tenant.TenantContextFilter;
 import org.connected_sources.testconfig.StubBeans;
 import org.connected_sources.testconfig.TenantFsBeanConfig;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
                 BackendApiApplication.class,
 //                TenantDebugController.class,
                 TenantFsBeanConfig.class,
-                TenantContextFilter.class,
+//                TenantContextFilter.class,
                 StubBeans.class,
 //                DebugConfig.class,  // include the filter registration
                 TestSecurityConfig.class // senza CSRF nei test..
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 //                "spring.security.enabled=false"
         }
 )
-@Import({TenantContextFilter.class})
+//@Import({TenantContextFilter.class})
 @AutoConfigureMockMvc
 class TenantDatasourceResolutionE2ETest {
 

@@ -3,6 +3,7 @@ package org.connected_sources.core.user.onboarding.repo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.connected_sources.core.user.onboarding.model.OnboardingRequestCmd;
+import org.connected_sources.core.user.onboarding.model.OnboardingSummary;
 import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
 import static org.connected_sources.shared.onboarding.OnboardingState.*;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -88,4 +89,55 @@ public class OnboardingRepo {
               actor,
               detailsJson);
   }
+
+    public long createOrReuseRequest(
+            OnboardingRequestCmd cmd,
+            String correlationId) throws JsonProcessingException {
+
+        Long id = jdbc.query("""
+    
+                        INSERT INTO onboarding_request(requester_user_id, producer_name, email, website, vat_or_fiscal_code, state, correlation_id)
+    VALUES (?,?,?,?,?,'REQUESTED',?)
+    ON CONFLICT DO NOTHING
+    RETURNING id
+    """,
+                ps -> {
+                    ps.setLong(1, cmd.requesterUserId());
+                    ps.setString(2, cmd.producerName());
+                    ps.setString(3, cmd.email());
+                    ps.setString(4, cmd.website());
+                    ps.setString(5, cmd.vatOrFiscalCode());
+                    ps.setString(6, correlationId);
+                },
+                rs -> rs.next() ? rs.getLong(1) : null
+        );
+
+        if (id == null) {
+            id = jdbc.queryForObject(
+                    """
+        SELECT id FROM
+                    onboarding_request
+        WHERE producer_name=?
+                    AND email=?
+        ORDER BY
+                    created_at DESC LIMIT 1
+      """, Long.class, cmd.
+
+                            producerName(), cmd.email());
+        }
+
+        audit(id, "REQUESTED", cmd.requesterUserId(), Map.of("correlationId", correlationId));
+        return id;
+
+    }
+
+    public Optional<OnboardingSummary> findSummary(long id) {
+        return jdbc.query("SELECT * from public.onboarding_get_request_by_id(?)",
+                ps -> ps.setInt(1, Math.toIntExact(id)),
+                rs -> rs.next()
+                        ? Optional.of(OnboardingSummary.fromRecord(rs))
+                        : Optional.empty()
+        );
+    }
+
 }

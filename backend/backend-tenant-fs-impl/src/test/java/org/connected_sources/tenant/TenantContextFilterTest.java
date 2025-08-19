@@ -19,7 +19,7 @@ class TenantContextFilterTest {
     MockHttpServletResponse response = new MockHttpServletResponse();
     FilterChain chain = mock(FilterChain.class);
 
-    TenantContextHolder holder = new TenantContextHolder();
+    org.connected_sources.shared.context.TenantContextHolder holder = new org.connected_sources.shared.context.TenantContextHolder();
     TenantContextFilter filter = new TenantContextFilter(holder);
 
     filter.doFilter(request, response, chain);

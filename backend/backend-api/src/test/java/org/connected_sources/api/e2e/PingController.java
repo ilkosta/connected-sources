@@ -1,6 +1,6 @@
 package org.connected_sources.api.e2e;
 
-import org.connected_sources.tenant.TenantContextHolder;
+import org.connected_sources.shared.context.TenantContextHolder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +20,11 @@ public class PingController {
 
   @PostMapping("/ping")
   public ResponseEntity<String> ping() {
-    return tenantContextHolder.getTenantId()
-            .map(tenantId -> ResponseEntity.ok("pong " + tenantId))
-            .orElse(ResponseEntity.badRequest().body("Tenant not set"));
+    String tenantId = tenantContextHolder.get().tenantId();
+    if (tenantId == null) {
+      return ResponseEntity.badRequest().body("Tenant not set");
+    }
+    return ResponseEntity.ok("pong " + tenantId);
   }
 }
 

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TenantContextHolderTest {
 
-  private final TenantContextHolder holder = new TenantContextHolder();
+  private final org.connected_sources.shared.context.TenantContextHolder holder = new org.connected_sources.shared.context.TenantContextHolder();
   @Test
   void testSetAndClearTenantId() {
     assertFalse(holder.isSet());

@@ -1,6 +1,6 @@
 package org.connected_sources.testconfig;
 
-import org.connected_sources.tenant.TenantContextHolder;
+import org.connected_sources.shared.context.TenantContextHolder;
 import org.connected_sources.tenant.TenantDatasourceRegistry;
 import org.connected_sources.tenant.fs.FsTenantDatasourceRegistry;
 
