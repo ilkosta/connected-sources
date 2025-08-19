@@ -13,6 +13,7 @@ plugins {
 
 
 dependencies {
+    implementation(project(":backend-shared"))
     implementation(project(":backend-tenant-api"))
     implementation(project(":backend-tenant-fs-impl"))
 

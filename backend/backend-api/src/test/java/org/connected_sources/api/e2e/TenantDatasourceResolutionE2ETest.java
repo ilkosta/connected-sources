@@ -18,14 +18,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-import org.connected_sources.testconfig.DebugConfig;
+//import org.connected_sources.testconfig.DebugConfig;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 // import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.jsonPath;
 
-import org.connected_sources.testconfig.WebTestConfig;
+//import org.connected_sources.testconfig.WebTestConfig;
 
 
 @SpringBootTest(
@@ -35,7 +35,7 @@ import org.connected_sources.testconfig.WebTestConfig;
                 TenantFsBeanConfig.class,
                 TenantContextFilter.class,
                 StubBeans.class,
-                DebugConfig.class,  // include the filter registration
+//                DebugConfig.class,  // include the filter registration
                 TestSecurityConfig.class // senza CSRF nei test..
         },
         properties = {

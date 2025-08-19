@@ -12,6 +12,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven { url = uri("https://repo.spring.io/release") }
     }
 }
 
@@ -31,23 +32,9 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(24)
+            languageVersion = JavaLanguageVersion.of(21) // jvm21 è l'ultimo LTS supportato da springBoot
         }
     }
-
-//    configurations {
-//        compileOnly {
-//            extendsFrom(configurations.annotationProcessor.get())
-//        }
-//    }
-
-//    // con pluginManagement
-//    dependencyManagement {
-//        imports {
-////            mavenBom("org.springframework:spring-framework-bom:6.2.0")
-//            mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.0")
-//        }
-//    }
 
     // Kotlin DSL form of `dependencyManagement { ... }`
     extensions.configure<DependencyManagementExtension> {

@@ -20,11 +20,9 @@ public class PingController {
 
   @PostMapping("/ping")
   public ResponseEntity<String> ping() {
-    String tenantId = tenantContextHolder.getTenantId();
-    if (tenantId == null) {
-      return ResponseEntity.badRequest().body("Tenant not set");
-    }
-    return ResponseEntity.ok("pong " + tenantId);
+    return tenantContextHolder.getTenantId()
+            .map(tenantId -> ResponseEntity.ok("pong " + tenantId))
+            .orElse(ResponseEntity.badRequest().body("Tenant not set"));
   }
 }
 

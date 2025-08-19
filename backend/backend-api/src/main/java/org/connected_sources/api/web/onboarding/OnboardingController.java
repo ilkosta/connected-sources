@@ -1,4 +1,4 @@
-package org.connected_sources.api;
+package org.connected_sources.api.web.onboarding;
 
 import jakarta.validation.Valid;
 import org.connected_sources.api.dto.OnboardingRequest;

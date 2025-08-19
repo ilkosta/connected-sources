@@ -1,7 +1,7 @@
 package org.connected_sources.api;
 
 import org.connected_sources.core.user.ProducerRegistration;
-import org.connected_sources.testconfig.WebTestConfig;
+//import org.connected_sources.testconfig.WebTestConfig;
 import org.connected_sources.shared.User;
 import org.connected_sources.core.user.ProducerService;
 import org.connected_sources.core.user.RegistrationExpiredException;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @ActiveProfiles("test")
-@ContextConfiguration(classes = WebTestConfig.class)
+//@ContextConfiguration(classes = WebTestConfig.class)
 @WebMvcTest(ProducerRegistrationController.class)
 @Import(ProducerRegistrationControllerTest.TestConfig.class)
 class ProducerRegistrationControllerTest {
