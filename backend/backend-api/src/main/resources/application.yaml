@@ -1,0 +1,48 @@
+spring:
+  main:
+    allow-circular-references: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/connected_sources
+    username: cs
+    password: cs!2025
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  #    database: POSTGRES
+
+  jackson:
+    serialization.WRITE_DATES_AS_TIMESTAMPS: false
+    
+  task:
+    execution:
+      thread-name-prefix: onbard-
+
+
+logging:
+  level:
+    root: INFO
+    org.connected_sources: DEBUG
+    org.springframework: INFO
+    #    org.connected_sources: INFO
+    #    org.springframework: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure: DEBUG
+  exception-conversion-word: "%ex{full}"
+
+#security:
+#  mock:
+#    enabled: true
+
+async:
+  ops:
+    executor:
+      core-pool-size: 8
+      max-pool-size: 32
+      queue-capacity: 500
+      thread-name-prefix: "ops-async-"
+    scheduler:
+      pool-size: 4
+      thread-name-prefix: "ops-sched-"
