@@ -1,6 +1,6 @@
 package org.connected_sources.testconfig;
 
-import org.connected_sources.tenant.TenantDatasourceRegistry;
+import org.connected_sources.tenant.spi.TenantDatasourceRegistry;
 import org.connected_sources.tenant.fs.FsTenantDatasourceRegistry;
 import org.connected_sources.tenant.fs.FsTenantDatasourceResolver;
 import org.springframework.context.annotation.Bean;

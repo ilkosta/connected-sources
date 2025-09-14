@@ -13,11 +13,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework:spring-jdbc")
-    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+//    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("org.postgresql:postgresql") // let Spring Boot manage the version
 
     // SQLite JDBC driver
-    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     implementation("org.xerial:sqlite-jdbc:3.50.1.0")
+    implementation("org.flywaydb:flyway-core:11.13.0")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql:11.13.1")
+
+    // JSON serialization
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.20.0")
+
+    // SLF4J API for logging
+    implementation("org.slf4j:slf4j-api:2.0.17")
 
     // Moduli interni
     implementation(project(":backend-shared"))
@@ -33,4 +43,11 @@ dependencies {
 
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.1.0")
+}
+tasks.named<Jar>("jar") {
+    enabled = true
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    enabled = false
 }

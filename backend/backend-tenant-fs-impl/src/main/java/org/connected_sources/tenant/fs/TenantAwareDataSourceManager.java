@@ -1,7 +1,7 @@
 package org.connected_sources.tenant.fs;
 
 import org.connected_sources.shared.context.TenantContextHolder;
-import org.connected_sources.tenant.TenantDatasourceRegistry;
+import org.connected_sources.tenant.spi.TenantDatasourceRegistry;
 import org.connected_sources.shared.TenantLifecycleManager;
 
 import javax.sql.DataSource;

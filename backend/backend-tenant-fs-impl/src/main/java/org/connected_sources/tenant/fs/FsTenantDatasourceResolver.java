@@ -1,6 +1,7 @@
 package org.connected_sources.tenant.fs;
 
-import org.connected_sources.tenant.TenantDatasourceResolver;
+import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
+import org.connected_sources.tenant.spi.TenantDatasourceResolver;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -51,5 +52,10 @@ public class FsTenantDatasourceResolver implements TenantDatasourceResolver
     } catch (SQLException e) {
       throw new RuntimeException("Failed to create DataSource for tenant: " + tenantId, e);
     }
+  }
+
+  @Override
+  public DataSource createDataSource(String tenantId, DataSourceDescriptor descriptor) {
+    return null; // TODO : verify ds creation and migration (by flyway?) TODO
   }
 }

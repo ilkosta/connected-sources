@@ -1,5 +1,7 @@
 package org.connected_sources.tenant.fs;
 
+import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
+import org.connected_sources.tenant.spi.db.TenantDescriptorStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,11 +12,13 @@ import static org.mockito.Mockito.*;
 
 class FsTenantDatasourceRegistryTest {
 
+  private TenantDescriptorStore tds;
   private FsTenantDatasourceResolver resolver;
   private FsTenantDatasourceRegistry registry;
 
   @BeforeEach
   void setUp() {
+    tds = mock(TenantDescriptorStore.class);
     resolver = mock(FsTenantDatasourceResolver.class);
     registry = new FsTenantDatasourceRegistry(resolver);
   }
@@ -31,14 +35,14 @@ class FsTenantDatasourceRegistryTest {
   @Test
   void shouldCreateAndCacheDataSourceIfNotPresent() {
     DataSource ds = mock(DataSource.class);
-    when(resolver.createDataSource("tenantB")).thenReturn(ds);
+    when(resolver.createDataSource("tenantB", null)).thenReturn(ds);
 
     DataSource result1 = registry.getDataSource("tenantB");
     DataSource result2 = registry.getDataSource("tenantB");
 
     assertSame(ds, result1);
     assertSame(result1, result2);
-    verify(resolver, times(1)).createDataSource("tenantB");
+    verify(resolver, times(1)).createDataSource("tenantB", null);
   }
 
   @Test

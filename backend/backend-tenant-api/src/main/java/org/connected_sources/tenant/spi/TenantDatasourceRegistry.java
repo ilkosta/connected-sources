@@ -1,9 +1,9 @@
-package org.connected_sources.tenant;
+package org.connected_sources.tenant.spi;
 
 import javax.sql.DataSource;
 
 /**
- * Registry that maps tenant identifiers to their DataSource instances.
+ * Registry is a cache that maps tenant identifiers to their DataSource instances.
  * Expected to be thread-safe and updated dynamically.
  */
 public interface TenantDatasourceRegistry {
@@ -31,4 +31,6 @@ public interface TenantDatasourceRegistry {
    * @return true if registered, false otherwise
    */
   boolean containsTenant(String tenantId);
+
+  public void evict(String tenantId);
 }

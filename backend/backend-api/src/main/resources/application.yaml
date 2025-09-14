@@ -46,3 +46,18 @@ async:
     scheduler:
       pool-size: 4
       thread-name-prefix: "ops-sched-"
+
+tenant:
+  storage:
+    type: fs
+  sqlite:
+    flyway:
+      enalbed: true
+      locations:
+        - classpath:/tenant-sqlite/migration
+      schemaPrefix: tenant_
+      baselineVersion: 1.0
+      validateOnMigrate: true
+      baselineOnMigrate: false
+      historyTable: flyway_schema_history
+  base-directory: /home/costa/pkg/connected-sources/backend/data/tenants

@@ -1,10 +1,9 @@
 package org.connected_sources.tenant.fs;
 
-import org.connected_sources.tenant.TenantDatasourceRegistry;
+import org.connected_sources.tenant.spi.TenantDatasourceRegistry;
 import org.connected_sources.shared.TenantLifecycleManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,6 +1,6 @@
 package org.connected_sources.tenant.fs;
 
-import org.connected_sources.tenant.TenantDatasourceRegistry;
+import org.connected_sources.tenant.spi.TenantDatasourceRegistry;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -53,5 +53,10 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
   @Override
   public boolean containsTenant(String tenantId) {
     return cache.containsKey(tenantId);
+  }
+
+  @Override
+  public void evict(String tenantId) {
+    // tODO: I'm not sure if it's needed
   }
 }
