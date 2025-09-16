@@ -9,6 +9,6 @@ include("backend-api",
 //    "backend-starter",
 //    "backend-logging-api",
 //    "backend-logging-fs-impl",
-//    "backend-notification",
+    "backend-notification",
 //    "backend-infra-fs"
 )

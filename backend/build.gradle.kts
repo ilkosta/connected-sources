@@ -32,7 +32,8 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21) // jvm21 è l'ultimo LTS supportato da springBoot
+//            languageVersion = JavaLanguageVersion.of(21) // jvm21 è l'ultimo LTS supportato da springBoot
+            languageVersion = JavaLanguageVersion.of(24)
         }
     }
 
