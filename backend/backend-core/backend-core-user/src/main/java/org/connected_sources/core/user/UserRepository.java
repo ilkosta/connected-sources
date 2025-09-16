@@ -1,30 +1,30 @@
-//package org.connected_sources.core.user;
-//
-//import org.springframework.jdbc.core.JdbcTemplate;
-//import org.springframework.stereotype.Repository;
-//
-//import java.util.UUID;
-//
-//@Repository
-//public class UserRepository {
-//
-//  private final JdbcTemplate jdbcTemplate;
-//
-//  public UserRepository(JdbcTemplate jdbcTemplate) {
-//    this.jdbcTemplate = jdbcTemplate;
-//  }
-//
-//  public String createProducerAndUser(CreateUserAndProducerCommand command) {
-//    String producerId = "p__" + UUID.randomUUID().toString().replace("-", "");
-//    jdbcTemplate.update("INSERT INTO producers (id, name) VALUES (?, ?)",
-//                        producerId, command.getProducerName());
-//
-//    String userId = "u__" + UUID.randomUUID().toString().replace("-", "");
-//    jdbcTemplate.update("INSERT INTO users (id, email, producer_id) VALUES (?, ?, ?)",
-//                        userId, command.getAdminEmail(), producerId);
-//
-//    return producerId;
-//  }
-//
-//}
-// TODO: to be deleted
+package org.connected_sources.core.user;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class UserRepository {
+
+  private final JdbcTemplate jdbc;
+
+  public UserRepository(JdbcTemplate jdbcTemplate) {
+    this.jdbc = jdbcTemplate;
+  }
+
+  public Optional<User> findByUserId(String userId) {
+      return jdbc.query("select * from app_user where username=?",
+              ps -> ps.setString(1,userId),
+              rs -> {
+                  return rs.next()
+                          ? Optional.of(User.fromRecord(rs))
+                          : Optional.empty();
+              }
+      );
+  }
+
+}
+

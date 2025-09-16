@@ -8,7 +8,8 @@ dependencies {
     // Moduli interni
     implementation(project(":backend-core:backend-core-user"))
     implementation(project(":backend-tenant-api"))
-        implementation(project(":backend-shared"))
+    implementation(project(":backend-shared"))
+    implementation(project(":backend-notification"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
