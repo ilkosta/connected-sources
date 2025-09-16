@@ -4,7 +4,7 @@ import org.connected_sources.api.BackendApiApplication;
 
 import org.connected_sources.config.TestSecurityConfig;
 //import org.connected_sources.tenant.TenantContextFilter;
-import org.connected_sources.testconfig.StubBeans;
+//import org.connected_sources.testconfig.StubBeans;
 import org.connected_sources.testconfig.TenantFsBeanConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 //                TenantDebugController.class,
                 TenantFsBeanConfig.class,
 //                TenantContextFilter.class,
-                StubBeans.class,
+//                StubBeans.class,
 //                DebugConfig.class,  // include the filter registration
                 TestSecurityConfig.class // senza CSRF nei test..
         },

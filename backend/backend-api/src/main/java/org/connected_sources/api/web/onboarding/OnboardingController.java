@@ -2,7 +2,7 @@ package org.connected_sources.api.web.onboarding;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
-import org.connected_sources.api.dto.OnboardingRequest;
+//import org.connected_sources.api.dto.OnboardingRequest;
 //import org.connected_sources.core.user.OnboardingService;
 import org.connected_sources.core.user.onboarding.model.OnboardingRequestCmd;
 import org.connected_sources.core.user.onboarding.model.OnboardingSummary;
