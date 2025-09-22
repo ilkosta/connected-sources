@@ -7,21 +7,17 @@ plugins {
 
 
 dependencies {
-    // Core di Spring (NO spring-boot!)
     implementation("org.springframework:spring-context")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework:spring-jdbc")
-//    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
+    implementation("org.springframework:spring-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql") // let Spring Boot manage the version
 
-    // SQLite JDBC driver
-    implementation("org.xerial:sqlite-jdbc:3.50.1.0")
-    implementation("org.flywaydb:flyway-core:11.13.0")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql:11.13.1")
+    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
 
     // JSON serialization
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.0")
@@ -29,9 +25,15 @@ dependencies {
     // SLF4J API for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
 
+    // SQLite JDBC driver
+    implementation("org.xerial:sqlite-jdbc:3.50.1.0")
+    implementation("org.flywaydb:flyway-core:11.13.0")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql:11.13.1")
+
     // Moduli interni
     implementation(project(":backend-shared"))
     implementation(project(":backend-tenant-api"))
+
 
     // Dipendenze di test
 //    testImplementation("org.springframework:spring-test")
@@ -44,6 +46,7 @@ dependencies {
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.1.0")
 }
+
 tasks.named<Jar>("jar") {
     enabled = true
 }

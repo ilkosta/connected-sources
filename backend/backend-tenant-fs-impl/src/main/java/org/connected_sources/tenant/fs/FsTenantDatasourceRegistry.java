@@ -1,6 +1,9 @@
 package org.connected_sources.tenant.fs;
 
+import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
 import org.connected_sources.tenant.spi.TenantDatasourceRegistry;
+import org.connected_sources.tenant.spi.db.TenantDescriptorStore;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -9,18 +12,23 @@ import java.util.Objects;
 
 /**
  * responsabilità:
- *
+ *  Registry is a cache that maps tenant identifiers to their DataSource instances.
+ *  on cache miss read the descriptor from Postgres
  * Responsabilità:
  * - Memorizzazione nella cache di istanze di DataSource specifiche per tenant (una per tenant)
- * - Interazione con un FsTenantDatasourceResolver collegabile per la creazione di istanze di DataSource su richiesta
- * - Registrazione di nuove origini dati
+ *  - on cache miss read the descriptor from Postgres
+ * - Registrazione di nuove origini dati *
  */
+@Component
 public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
 
   private final Map<String, DataSource> cache = new ConcurrentHashMap<>();
   private final FsTenantDatasourceResolver datasourceResolver;
+  private final TenantDescriptorStore store;
+//  private final Map<DbProvider, TenantDatasourceResolver> resolvers = new EnumMap<>(DbProvider.class);
 
-  public FsTenantDatasourceRegistry(FsTenantDatasourceResolver datasourceResolver) {
+  public FsTenantDatasourceRegistry(TenantDescriptorStore store, FsTenantDatasourceResolver datasourceResolver) {
+    this.store = store;
     this.datasourceResolver = Objects.requireNonNull(datasourceResolver);
   }
 
@@ -29,8 +37,13 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
     if (tenantId == null || tenantId.isBlank()) {
       throw new IllegalArgumentException("Tenant ID must not be null or blank");
     }
+    var cached = cache.get(tenantId);
+    if (cached != null)
+      return cached;
 
-    return cache.computeIfAbsent(tenantId, datasourceResolver::createDataSource);
+    DataSourceDescriptor d = store.readDescriptor(tenantId);
+    var ds = datasourceResolver.createDataSource(tenantId, d);
+    return cache.computeIfAbsent(tenantId, __ -> ds);
   }
 
 
@@ -55,8 +68,5 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
     return cache.containsKey(tenantId);
   }
 
-  @Override
-  public void evict(String tenantId) {
-    // tODO: I'm not sure if it's needed
-  }
+  public void evict(String tenantId) { cache.remove(tenantId); }
 }

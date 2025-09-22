@@ -20,7 +20,7 @@ public class Team {
         members.removeIf(member -> member.getUser().equals(user));
     }
 
-    public void removeMember(String uid) {
+    public void removeMember(Long uid) {
         members.removeIf(member -> member.getUser().getId().equals(uid));
     }
 

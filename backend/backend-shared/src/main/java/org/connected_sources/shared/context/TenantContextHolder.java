@@ -44,8 +44,8 @@ public class TenantContextHolder {
 
   public static TenantContext from(String tenantId, Long userId, String correlationId) {
     return new TenantContext(tenantId, userId,
-            (correlationId == null || correlationId.isBlank() )
-                    ? UUID.randomUUID().toString()
-                    : correlationId);
+                             (correlationId == null || correlationId.isBlank() )
+                                     ? UUID.randomUUID().toString()
+                                     : correlationId);
   }
 }

@@ -1,6 +1,7 @@
 //package org.connected_sources.core.user;
 //
 //import org.connected_sources.shared.*;
+//import org.connected_sources.tenant.spi.TenantLifecycleManager;
 //import org.junit.jupiter.api.Assertions;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,7 @@
 //import static org.mockito.Mockito.verify;
 //
 //@ExtendWith(MockitoExtension.class)
-//public class ProducerServiceTest {
+//class ProducerServiceTest {
 //
 //    @Mock
 //    private TenantLifecycleManager tenantManager;
@@ -24,41 +25,46 @@
 //    private ProducerService producerService;
 //
 //    @Test
-//    public void testRegisterAndFetchProducer() {
+//    void testRegisterAndFetchProducer() {
 //        final String email = "email";
-//        final String name = "pippo";
-//        final String pid = "p1";
+//        final Long id = 100L;
 //        final String lHQ = "sede legale";
-//        ProducerRegistration r = producerService.register(name, email,lHQ);
+//        final String username = "pippo";
+//        final String userEmail = "pippo@gmail.com";
+//        final String producerName = "producer name";
+//        ProducerRegistration r = producerService.register(username, userEmail, producerName, email,lHQ);
 //
 //        assertFalse(producerService.isRegistered(r.getProducerId()));
 //        Producer p = producerService.getProducer(r.getProducerId());
 //        assertNull(p);
 //
-//        User u = new User(name,email);
+//        User u = new User();
+//        u.setId(id);
+//        u.setEmail(email);
 //        producerService.completeRegistration(r.getProducerId(),r.getRegistrationId(), u);
 //        assertTrue(producerService.isRegistered(r.getProducerId()));
 //
 //        p = producerService.getProducer(r.getProducerId());
 //        assertNotNull(p);
-//        assertEquals(name, p.getName());
 //        assertEquals(email, p.getInstitutionalEmail());
 //    }
 //
 //    @Test
-//    public void testTeamCreation() {
+//    void testTeamCreation() {
 //        String pid = "p1";
 //        String tid = "tid";
-//        String uid1 = "user1";
-//        String uid2 = "user2";
+//        Long uid1 = 100L;
+//        Long uid2 = 200L;
 //        String u1email = "email1";
 //        String u2email = "email2";
 //
 //        TeamService teamService = new TeamService();
 //        teamService.createTeam(tid, pid);
-//        User u = new User(uid1, u1email);
+//        User u = new User();
+//        u.setId(uid1); u.setEmail(u1email);
 //        teamService.addMember(pid, tid, u, UserRole.MANAGER);
-//        u = new User(uid2, u2email);
+//        u = new User();
+//        u.setId(uid2);u.setEmail(u2email);
 //        teamService.addMember(pid,tid, u, UserRole.MEMBER);
 //        Set<TeamMember> members = teamService.getMembers(pid,tid);
 //        assertEquals(2, members.size());
@@ -71,18 +77,21 @@
 //    }
 //
 //    @Test
-//    public void testRegisterProducerCreatesTenantAndStoresProducer() {
+//    void testRegisterProducerCreatesTenantAndStoresProducer() {
 //
-//        final String name = "pippo";
-//        final String email = "email";
+//        final Long id = 101L;
+//        final String username = "pippo", userEmail = "pippo@gmail.com";
+//
+//        final String name = "producere1", email = "producer1 email";
 //        final String lhq = "sede legale";
 //
-//        ProducerRegistration r = producerService.register(name,email, lhq);
+//        ProducerRegistration r = producerService.register(username,userEmail,name, email, lhq);
 //        assertFalse(producerService.isRegistered(r.getProducerId()));
 //        Producer p = producerService.getProducer(r.getProducerId());
 //        assertNull(p);
 //
-//        User u = new User(name,email);
+//        User u = new User();
+//        u.setId(id);u.setEmail(email);
 //        producerService.completeRegistration(r.getProducerId(),r.getRegistrationId(), u);
 //        assertTrue(producerService.isRegistered(r.getProducerId()));
 //
@@ -93,27 +102,19 @@
 //    }
 //
 //    @Test
-//    public void testCompleteRegistrationStoresManager() {
+//    void testCompleteRegistrationStoresManager() {
 //
 //        final String name = "pippo";
 //        final String email = "email";
 //        final String hq = "sede legale";
 //
-//        final String u1 = "user1";
+//        final Long u1 = 1L;
+//        final String username = "u1";
 //        final String u1email = "email1";
 //
-//        ProducerRegistration r = producerService.register(name,email,hq);
-//        User u = new User(u1, u1email);
+//        ProducerRegistration r = producerService.register(username, u1email, name,email,hq);
+//        User u = new User(); u.setId(u1); u.setEmail(u1email);
 //        producerService.completeRegistration(r.getProducerId(), r.getRegistrationId(), u);
 //        assertEquals(u, producerService.getManager(u1));
 //    }
 //}
-//
-////import org.junit.jupiter.api.Test;
-////
-////public class ProducerServiceTest {
-////    @Test
-////    public void sanityCheck() {
-////        System.out.println("Test runs!");
-////    }
-////}

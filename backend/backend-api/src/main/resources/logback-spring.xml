@@ -1,0 +1,61 @@
+<configuration scan="true" scanPeriod="30 seconds">
+    <property name="APP_NAME" value="content-ops"/>
+    <!-- Async wrapper to keep request latency low -->
+    <appender name="ASYNC_JSON" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="CONSOLE_JSON"/>
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <pattern>
+                    <pattern>
+                        {
+                        "level":"%level",
+                        "logger":"%logger{36}",
+                        "thread":"%thread",
+                        "message":"%message",
+                        "app":"${APP_NAME}",
+                        "mdc":
+                            { "tenantId":"%X{tenantId}"
+                            , "userId":"%X{userId}"
+                            , "correlationId":"%X{correlationId}"
+                            } 
+                        }
+                    </pattern>
+                </pattern>
+                <arguments/>      <!-- include structured arguments if you use {} placeholders -->
+                <mdc/>            <!-- also include full MDC map -->
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                        <maxLength>2048</maxLength>
+                        <shortenedClassNameLength>20</shortenedClassNameLength>
+                        <rootCauseFirst>true</rootCauseFirst>
+                    </throwableConverter>
+                </stackTrace>c
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- appender di fallback per debug-->
+    <appender name="CONSOLE_PLAIN" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{full}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log levels -->
+    <logger name="org.connected_sources" level="INFO"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_JSON"/>
+        <appender-ref ref="CONSOLE_PLAIN"/>
+    </root>
+</configuration>

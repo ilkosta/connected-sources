@@ -9,6 +9,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+/* DESIGN
+ * -----------------
+ * Context-aware executor:
+ *  - ContextAwareTaskDecorator captures {tenantId,userId,correlationId}
+ *    and populates MDC for child threads.
+ *  - Bounded queue + rejection policy (caller-runs) to protect API latency.
+ *  - Named threads for easier log correlation.
+ */
 @Configuration
 @EnableConfigurationProperties(OpsAsyncProperties.class)
 public class AsyncConfig {

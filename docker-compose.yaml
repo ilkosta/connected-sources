@@ -1,0 +1,19 @@
+services:
+  pg: # istanza del database locale
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg/db/17:/var/lib/postgresql/data
+      - ./pg/baks:/var/lib/postgresql/baks
+      - ./pg/init:/docker-entrypoint-initdb.d:ro
+  
+    environment:
+      - POSTGRES_DB=connected_sources
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs!2025
+
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - TZ="Europe/Rome"
+      - POSTGRES_INITDB_ARGS="--encoding=UTF-8" #"--locale=it_IT.utf8"

@@ -20,7 +20,7 @@ class FsTenantDatasourceRegistryTest {
   void setUp() {
     tds = mock(TenantDescriptorStore.class);
     resolver = mock(FsTenantDatasourceResolver.class);
-    registry = new FsTenantDatasourceRegistry(resolver);
+    registry = new FsTenantDatasourceRegistry(tds,resolver);
   }
 
   @Test

@@ -18,7 +18,7 @@ class FsTenantLifecycleManagerTest {
     void setUp() {
         resolver = mock(FsTenantDatasourceResolver.class);
         registry = mock(FsTenantDatasourceRegistry.class);
-        lifecycleManager = new FsTenantLifecycleManager(resolver, registry /*, "./tenants"*/);
+        lifecycleManager = new FsTenantLifecycleManager(resolver, registry, "./tenants");
     }
 
     @Test

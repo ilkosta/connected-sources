@@ -1,30 +1,79 @@
 package org.connected_sources.shared;
 
 import java.util.Objects;
+import java.util.Set;
 
+import jakarta.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
-    private final String id;
-    private final String email;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    public User(String id, String email) {
-        this.id = id;
-        this.email = email;
-    }
+  private String firstname;
+  private String lastname;
+  private char status;
+  private String email;
+  private String gitUsername;
 
-    public String getId() { return id; }
-    public String getEmail() { return email; }
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<ContactInformations> contactInformations;
 
+  public Long getId() {
+    return id;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return id.equals(user.id);
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+  public String getFirstname() {
+    return firstname;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+
+  public char getStatus() {
+    return status;
+  }
+
+  public void setStatus(char status) {
+    this.status = status;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getGitUsername() {
+    return gitUsername;
+  }
+
+  public void setGitUsername(String gitUsername) {
+    this.gitUsername = gitUsername;
+  }
+
+  public Set<ContactInformations> getContactInformations() {
+    return contactInformations;
+  }
+
+  public void setContactInformations(Set<ContactInformations> contactInformations) {
+    this.contactInformations = contactInformations;
+  }
 }

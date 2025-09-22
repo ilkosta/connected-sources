@@ -1,0 +1,22 @@
+<configuration>
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="CONSOLE"/>
+        <queueSize>4096</queueSize>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} -
+                [%X{tenantId} %X{userId} %X{correlationId}] %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.connected_sources" level="INFO"/>
+    <logger name="org.springframework" level="WARN"/>
+    <root level="INFO">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+    </root>
+</configuration>

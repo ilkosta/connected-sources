@@ -2,7 +2,7 @@
 //
 //
 //import org.connected_sources.shared.context.TenantContextHolder;
-//import org.connected_sources.tenant.fs.TenantAwareDataSourceManager;
+//import org.connected_sources.tenant.spi.TenantAwareDataSourceManager;
 //import org.springframework.stereotype.Service;
 //
 //@Service
@@ -23,8 +23,9 @@
 //  }
 //
 //  public void handleOnboarding(CreateUserAndProducerCommand command) {
-//    String producerId = userRepository.createProducerAndUser(command);
-//    tenantContextHolder.setTenantId("t__" + producerId);
-//    dataSourceManager.resolveDataSource();
+//    throw new RuntimeException();
+////    String producerId = userRepository.createProducerAndUser(command);
+////    tenantContextHolder.setTenantId("t__" + producerId);
+////    dataSourceManager.resolveDataSource();
 //  }
 //}

@@ -2,15 +2,18 @@
 //
 //import com.github.slugify.Slugify;
 //import org.connected_sources.shared.*;
+//import org.connected_sources.tenant.spi.TenantLifecycleManager;
+//import org.springframework.stereotype.Component;
 //
 //import java.time.Instant;
 //import java.util.*;
 //
+//@Component
 //public class ProducerService {
 //
 //    private final Map<String, Producer> producers = new HashMap<>();
 //    private final Map<String, ProducerRegistration> pending = new HashMap<>();
-//    private final Map<String, User> managers = new HashMap<>();
+//    private final Map<Long, User> managers = new HashMap<>();
 //
 //    private final TenantLifecycleManager tenantManager;
 //    private final NotificationService notificationService;
@@ -20,17 +23,20 @@
 //        this.notificationService = notificationService;
 //    }
 //
-//    public ProducerRegistration register(String name, String email, String legalHQ) {
-//        final Slugify slg = Slugify.builder().lowerCase(true).build();
-//        String producerId = slg.slugify(name);
+//    public ProducerRegistration register(
+//            final String username, final String userEmail, // the requesting user
+//            final String name, final String email, final String legalHQ) {    // the producer data
+//        String producerId = UUID.randomUUID().toString();
 //        String registrationId = UUID.randomUUID().toString();
 //        Instant now = Instant.now();
 //
-//        ProducerRegistration reg = new ProducerRegistration(registrationId, producerId, name, email, legalHQ, now);
+//        ProducerRegistration reg = new ProducerRegistration(
+//                registrationId, producerId, name, email, legalHQ, now);
 //        pending.put(registrationId, reg);
 //
-//        String link = "https://frontend/register/" + producerId + "/" + registrationId;
-//        notificationService.sendRegistrationEmail(email, name, link);
+//      final Slugify slg = Slugify.builder().lowerCase(true).build();
+//        String link = "https://frontend/register/" + slg.slugify(name) + "/" + registrationId;
+//        notificationService.sendRegistrationEmail(email, username, userEmail, link); // TODO: ci va il nome utente
 //
 //        return reg;
 //    }
@@ -55,8 +61,7 @@
 //        return producers.get(id);
 //    }
 //
-//    public User getManager(String userId) {
+//    public User getManager(Long userId) {
 //        return managers.get(userId);
 //    }
 //}
-// TODO: to be deleted

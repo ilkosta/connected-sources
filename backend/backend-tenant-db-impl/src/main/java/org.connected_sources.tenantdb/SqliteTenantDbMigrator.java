@@ -8,6 +8,14 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.util.List;
 
+/* TEACHER
+ * ------------------
+ * Flyway order matters: baseline -> schema -> seeds.
+ * Seeds provide roles/categories/templates used by the app right after enable.
+ * SQLite specifics:
+ *  - DDL auto-commit: group related statements in a tx via Flyway callback.
+ *  - Vacuum is skipped on first run to reduce latency.
+ */
 @Component
 public class SqliteTenantDbMigrator implements TenantDbMigrator {
 

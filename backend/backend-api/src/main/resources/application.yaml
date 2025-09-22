@@ -11,23 +11,34 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-  #    database: POSTGRES
+#    database: POSTGRES
 
   jackson:
     serialization.WRITE_DATES_AS_TIMESTAMPS: false
-    
+  jpa:
+    hibernate:
+#      ddl-auto: update
+      ddl-auto: validate
+    show-sql: true
+    open-in-view: false
   task:
     execution:
       thread-name-prefix: onbard-
 
-
+onboarding:
+  request:
+    ttl: 172800 # 2d
+#  config:
+#    activate:
+#      on-profile: dev
+#  database-platform: org.hibernate.dialect.PostgreSQLDialect
 logging:
   level:
     root: INFO
     org.connected_sources: DEBUG
     org.springframework: INFO
-    #    org.connected_sources: INFO
-    #    org.springframework: DEBUG
+#    org.connected_sources: INFO
+#    org.springframework: DEBUG
     org.springframework.web: DEBUG
     org.springframework.boot.autoconfigure: DEBUG
   exception-conversion-word: "%ex{full}"
@@ -47,6 +58,7 @@ async:
       pool-size: 4
       thread-name-prefix: "ops-sched-"
 
+
 tenant:
   storage:
     type: fs
@@ -61,3 +73,47 @@ tenant:
       baselineOnMigrate: false
       historyTable: flyway_schema_history
   base-directory: /home/costa/pkg/connected-sources/backend/data/tenants
+
+backend:
+  base-url: "http://localhost:8080/"
+
+#server:
+#  servlet:
+#    context-path: /api
+
+telegram:
+  bot-token: YOUR_BOT_TOKEN
+  bot-username: your_bot
+
+management:
+  endpoints.web:
+    exposure.include: health,info,metrics,prometheus
+    base-path: /
+
+notifications:
+  retry:
+  maxAttempts: 5
+  backoff:
+    initial: 2s
+    multiplier: 2.0
+    max: 5m
+  ttlDefault: PT24H
+  infiniteTtlEventTypes: ["CONTENT_IMPORT_FAILED"]
+
+
+redmine:
+  baseUrl: https://redmine.example.com
+  apiKey: your-api-key-here
+  projectId: 123
+  incident:
+    trackerId: 7
+    category:
+      map:
+        SMTP_550: "Mail Delivery"
+        TELEGRAM_BOT_BLOCKED: "Telegram Delivery"
+        DEFAULT: "Uncategorized"
+
+health:
+  caching.ttl: 30 # secondi
+  fs:
+    min_available: 1000000000

@@ -3,4 +3,3 @@
 //
 //public class RegistrationExpiredException extends RuntimeException {
 //}
-// TODO: to be deleted

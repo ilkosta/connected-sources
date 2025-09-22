@@ -6,16 +6,18 @@
 //
 //import java.util.Set;
 //
-//public class TeamServiceTest {
+//class TeamServiceTest {
 //  @Test void addMemberMustThrowForProducerWithoutTeam() {
 //    String tid = "t1";
 //    String pid = "p1";
-//    String uid = "u1";
+//    Long uid = 1L;
 //    String uemail = "u1@org";
 //    String t2 = "t2";
 //
 //    TeamService ts = new TeamService();
-//    User u1 = new User(uid, uemail);
+//    User u1 = new User();
+//    u1.setId(uid);
+//    u1.setEmail(uemail);
 //
 //    // il produttore non ha nessun team
 //    assertThrows(IllegalArgumentException.class, () -> {
@@ -30,18 +32,20 @@
 //  }
 //
 //  @Test
-//  public void removingMemberMustBeSilentIfNotExisting() {
+//  void removingMemberMustBeSilentIfNotExisting() {
 //    String tid = "t1";
 //    String t2 = "t2";
 //    String pid = "p1";
-//    String uid = "u1";
+//    Long uid = 1L;
 //    String uemail = "u1@org";
 //    TeamService ts = new TeamService();
 //    assertDoesNotThrow(() -> {
 //      ts.removeMember(pid,tid,uid);
 //    });
 //
-//    User u1 = new User(uid, uemail);
+//    User u1 = new User();
+//    u1.setId(uid);
+//    u1.setEmail(uemail);
 //    assertDoesNotThrow(() -> {
 //      ts.removeMember(pid,tid,u1);
 //    });
@@ -54,17 +58,17 @@
 //
 //
 //  @Test
-//  public void testTeamMemberLifecycle() {
+//  void testTeamMemberLifecycle() {
 //    String tid = "t1";
 //    String pid = "p1";
-//    String uid = "u1";
+//    Long uid = 1L;
 //    String uemail = "u1@org";
 //
 //
 //    TeamService ts = new TeamService();
 //    String retTID = ts.createTeam(tid, pid);
 //    assertEquals(tid, retTID);
-//    User u1 = new User(uid, uemail);
+//    User u1 = new User(); u1.setEmail(uemail); u1.setId(uid);
 //    ts.addMember(pid,tid, u1, UserRole.MANAGER);
 //    Set<TeamMember> members = ts.getMembers(pid,tid);
 //    assertEquals(1, members.size());

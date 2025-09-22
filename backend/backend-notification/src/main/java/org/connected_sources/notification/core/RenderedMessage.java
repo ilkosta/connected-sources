@@ -5,7 +5,9 @@ import java.util.Map;
 public record RenderedMessage(
         String correlationId,
         String tenantId,
+        Long userId,
         Channel channel,
         String subject,
-        String body
+        String bodyMd,
+        Map<String,Object> providerHints
 ) {}

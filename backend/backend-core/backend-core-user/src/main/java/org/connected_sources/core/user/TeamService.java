@@ -54,7 +54,7 @@
 //    }
 //
 //    // silent
-//    public void removeMember(String producerId, String teamId, String userId) {
+//    public void removeMember(String producerId, String teamId, Long userId) {
 //        if( producers.containsKey(producerId)) {
 //            Map<String, Team> teams = producers.get(producerId);
 //            Team team = teams.get(teamId);
@@ -76,11 +76,9 @@
 //        else { return Set.of(); }
 //    }
 //
-//    public boolean isMember(String producerId, String teamId, String userId) {
+//    public boolean isMember(String producerId, String teamId, Long userId) {
 //        return getMembers(producerId,teamId)
 //                .stream()
 //                .anyMatch(member -> member.getUser().getId().equals(userId));
 //    }
 //}
-
-// TODO: to be deleted...

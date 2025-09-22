@@ -56,7 +56,33 @@ public class EmailChannel extends BaseChannelAdapter {
 //    String value() { return value; }
   }
 
-  
+  private Content renderHtml(RenderedMessage msg) {
+
+    String md = msg.bodyMd() != null ? msg.bodyMd() : null;
+    if (md != null && !md.isBlank()) {
+      Node doc = mdParser.parse(md);
+      String html = mdHtmlRenderer.render(doc);
+      return Content.html(html);
+    }
+
+    String plain = msg.bodyMd() != null ? msg.bodyMd() : "(no content)";
+    return Content.plain(plain);
+  }
+
+  private String resolveRecipientEmail(RenderedMessage msg) {
+    // Explicit override via providerHints.email
+    Map<String, Object> hints = msg.providerHints();
+    if (hints != null && hints.get("email") instanceof String s && !s.isBlank()) {
+      return s;
+    }
+
+    // from the preferred email contact_information by userId
+    Long userId = msg.userId();
+    if (userId == null) return null;
+    Optional<String> email = contacts.findPrimaryEmail(userId);
+    return email.orElse(null);
+  }
+
   @Override
   protected SendResult sendInternal(@NonNull RenderedMessage msg) {
     try {
@@ -72,7 +98,8 @@ public class EmailChannel extends BaseChannelAdapter {
         mm.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
       mm.setSubject(MimeUtility.encodeText(msg.subject(), StandardCharsets.UTF_8.name(), "B"));
 
-      mm.setContent(msg.body(), "text/; charset=UTF-8" );
+      var content = renderHtml(msg);
+      mm.setContent(content.value(), content.isHtml() ? "text/html; charset=UTF-8" : "text/; charset=UTF-8" );
 
 
 
@@ -103,11 +130,7 @@ public class EmailChannel extends BaseChannelAdapter {
     }
   }
 
-    private String resolveRecipientEmail(RenderedMessage msg) {
-      return "costantino.giuliodori@gmail.com";
-    }
-
-    private String safeMessageId(MimeMessage mm) {
+  private String safeMessageId(MimeMessage mm) {
     try {
       String[] ids = mm.getHeader("Message-ID");
       return (ids != null && ids.length > 0) ? ids[0] : null;

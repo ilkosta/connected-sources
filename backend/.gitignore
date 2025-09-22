@@ -5,6 +5,8 @@ gradlew.bat
 .gradle
 build
 *.7z
+backend-api/src/main/resources/application.yaml
+backend-api/src/main/resources/application-dev.yaml
 
 # Created by https://www.toptal.com/developers/gitignore/api/gradle,java,intellij,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle,java,intellij,maven

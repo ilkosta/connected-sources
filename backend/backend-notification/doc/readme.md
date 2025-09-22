@@ -1,8 +1,8 @@
-invio di notifiche 
+Sending notifications
 
-* integrazione dei canali
-  * telegram
-  * email
-* gestione dei link di registrazione...
-* template per i messaggi
-* gestione di una schedulazione per i reminder..
+* Channel integration
+* Telegram
+* Email
+* Registration link management
+* Message templates
+* Reminder schedule management

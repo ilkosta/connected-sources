@@ -16,7 +16,6 @@
 //  @NotBlank
 //  private String legalHeadquarters;
 //
-//  // getters and setters
 //  public String getProducerId() { return producerId; }
 //  public void setProducerId(String producerId) { this.producerId = producerId; }
 //
@@ -34,4 +33,3 @@
 //    this.legalHeadquarters = legalHeadquarters;
 //  }
 //}
-//todo: to be deleted

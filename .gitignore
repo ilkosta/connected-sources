@@ -6,6 +6,7 @@ doc/**/vx.json
 doc/.lock
 doc/vpprefdata
 doc/.vpprefdata
+pg
 
 # Created by https://www.toptal.com/developers/gitignore/api/gradle,intellij+all,visualstudiocode,kate,vim,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle,intellij+all,visualstudiocode,kate,vim,linux

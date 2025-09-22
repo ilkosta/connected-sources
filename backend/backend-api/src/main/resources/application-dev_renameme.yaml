@@ -1,0 +1,37 @@
+#server:
+#  servlet:
+#    context-path: /api
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: costantin.giuliodori@studenti.unicam.it
+    password: email pwd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+notification:
+  email:
+    from: "Origini Connesse <costantin_giuliodori@studenti.unicam.it>"
+
+security:
+  mock:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    org.connected_sources: DEBUG
+    org.springframework: INFO
+    org.springframework.security: DEBUG
+
+onboarding:
+  request:
+    # secondi
+    ttl: 10
+
