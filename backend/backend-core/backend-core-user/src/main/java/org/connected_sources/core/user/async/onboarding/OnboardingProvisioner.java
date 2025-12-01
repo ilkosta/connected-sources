@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.connected_sources.core.user.onboarding.model.ProvisioningSpec;
 import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.events.EventType;
+import org.connected_sources.notification.service.CuratorContact;
 import org.connected_sources.notification.service.NotificationDispatcher;
 import org.connected_sources.notification.service.NotificationRepo;
 import org.connected_sources.notification.template.NotificationTemplate.*;
@@ -16,6 +17,7 @@ import org.connected_sources.tenant.spi.db.TenantDbMigrator;
 import org.connected_sources.core.user.onboarding.repo.OnboardingRepo;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.connected_sources.notification.template.NotificationTemplate.*;
 
@@ -45,7 +48,7 @@ import static org.connected_sources.notification.template.NotificationTemplate.*
  */
 @Component
 public class OnboardingProvisioner {
-
+  private static String TENANT_PREFIX = "Tenant ";
   private final TaskExecutor exec;
   private final TaskScheduler scheduler;
   private final OnboardingRepo repo;
@@ -59,17 +62,17 @@ public class OnboardingProvisioner {
                                TaskScheduler scheduler,
                                OnboardingRepo repo,
                                TenantLifecycleManager fs,
-                               TenantDbMigrator migrator,
+                               TenantDbMigrator dbMigrator,
                                NotificationDispatcher notifier,
                                TenantLogger tlog,
-                               ContextAwareTaskDecorator decorator, NotificationRepo notificationRepo) {
+                               ContextAwareTaskDecorator ctxTaskDecorator, NotificationRepo notificationRepo) {
     this.exec = exec;
     if (exec instanceof ThreadPoolTaskExecutor te) {
-      te.setTaskDecorator(decorator);
+      te.setTaskDecorator(ctxTaskDecorator);
     }
 //    this.exec.setTaskDecorator(decorator); // propagate TenantContext/MDC
     this.scheduler = scheduler;
-    this.repo = repo; this.fs = fs; this.migrator = migrator;
+    this.repo = repo; this.fs = fs; this.migrator = dbMigrator;
     this.notifier = notifier; this.tlog = tlog;
     this.notificationRepo = notificationRepo;
   }
@@ -97,8 +100,9 @@ public class OnboardingProvisioner {
         repo.setTenantState(tenantId, OnboardingState.ENABLED);
         repo.transitionState(requestId, OnboardingState.ENABLED, null, Map.of("tenantId", tenantId));
         // 4) Notify requester & producer admin
+
         notifier.enqueue(ONBOARDING_ENABLED, in.producerAdminEmail(), Channel.EMAIL,
-                         "Your workspace is ready", "Tenant "+tenantId+" enabled.", Duration.ofHours(24),
+                         "Your workspace is ready", TENANT_PREFIX +tenantId+" enabled.", Duration.ofHours(24),
                          EventType.ONBOARDING_ENABLED, false);
       } catch (Exception e) {
 
@@ -108,11 +112,12 @@ public class OnboardingProvisioner {
 
         repo.setTenantState(tenantId, OnboardingState.FAILED);
 
-        repo.curators(requestId).forEach(
+        getCuratorsEmailStream(requestId)
+                .forEach(
                 c -> {
                   // open incident & notify curator
                   notifier.enqueue(ONBOARDING_FAILED, c.address(), Channel.EMAIL,
-                          "Provisioning failed - " +tenantId, "Tenant "+tenantId+" error: "+e.getMessage(), Duration.ofHours(24),
+                          "Provisioning failed - " +tenantId, TENANT_PREFIX +tenantId+" error: "+e.getMessage(), Duration.ofHours(24),
                           EventType.ONBOARDING_FAILED, false);
                 }
         );
@@ -125,7 +130,9 @@ public class OnboardingProvisioner {
         }
 
         // compensate: best-effort cleanup
-        try { fs.deleteTenantArtifacts(tenantId); } catch(Exception ignore) {}
+        try { fs.deleteTenantArtifacts(tenantId); } catch(Exception _) {
+          // better to do nothing for problem/incident management
+        }
 
         // for debug...
           try {
@@ -135,6 +142,12 @@ public class OnboardingProvisioner {
           }
       }
     });
+  }
+
+  @NonNull
+  private Stream<CuratorContact> getCuratorsEmailStream(long requestId) {
+    return repo.curators(requestId).stream()
+            .filter(c -> c.channel().equals(Channel.EMAIL));
   }
 
   private void onDeadline(long requestId, String tenantId) {
@@ -148,9 +161,14 @@ public class OnboardingProvisioner {
           throw new RuntimeException(e);
         }
 
-        notifier.enqueue(ONBOARDING_EXPIRED, "curator@platform.local", Channel.EMAIL,
-                         "Provisioning expired", "Tenant "+tenantId+" did not complete in time.", Duration.ofHours(24),
-                         EventType.ONBOARDING_EXPIRED, false);
+        getCuratorsEmailStream(requestId)
+                .forEach(
+                c -> {
+                  notifier.enqueue(ONBOARDING_EXPIRED, c.address(), Channel.EMAIL,
+                          "Provisioning expired", TENANT_PREFIX +tenantId+" did not complete in time.", Duration.ofHours(24),
+                          EventType.ONBOARDING_EXPIRED, false);
+                }
+        );
       }
     });
   }

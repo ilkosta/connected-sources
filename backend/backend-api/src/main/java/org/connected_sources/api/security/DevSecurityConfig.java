@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Profile("dev | test")
 public class DevSecurityConfig {
 
+    // for autowiring
     @Bean
     public MockJwtAuthenticationFilter mockJwtAuthenticationFilter(MockJwtService mockJwtService) {
         return new MockJwtAuthenticationFilter(mockJwtService);
@@ -28,6 +29,9 @@ public class DevSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ping").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        // in prod
+                        //.requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(mockJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,12 +1,14 @@
 package org.connected_sources.api.dto.onboarding;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.connected_sources.shared.onboarding.OnboardingState;
 
 public record OnboardingView(
         Long id,
         OnboardingState state,
-        String producerName,
-        String email
+        @NotBlank String producerName,
+        @NotBlank @Email String email
 ) implements OnboardingViewInterface {
 
   public OnboardingView(Long id, OnboardingState state, String producerName, String email) {

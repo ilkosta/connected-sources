@@ -11,13 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Objects;
 
 /**
- * responsabilità:
+ * responsibility:
  *  Registry is a cache that maps tenant identifiers to their DataSource instances.
  *  on cache miss read the descriptor from Postgres
- * Responsabilità:
- * - Memorizzazione nella cache di istanze di DataSource specifiche per tenant (una per tenant)
- *  - on cache miss read the descriptor from Postgres
- * - Registrazione di nuove origini dati *
  */
 @Component
 public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
@@ -25,7 +21,6 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
   private final Map<String, DataSource> cache = new ConcurrentHashMap<>();
   private final FsTenantDatasourceResolver datasourceResolver;
   private final TenantDescriptorStore store;
-//  private final Map<DbProvider, TenantDatasourceResolver> resolvers = new EnumMap<>(DbProvider.class);
 
   public FsTenantDatasourceRegistry(TenantDescriptorStore store, FsTenantDatasourceResolver datasourceResolver) {
     this.store = store;
@@ -43,7 +38,7 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
 
     DataSourceDescriptor d = store.readDescriptor(tenantId);
     var ds = datasourceResolver.createDataSource(tenantId, d);
-    return cache.computeIfAbsent(tenantId, __ -> ds);
+    return cache.computeIfAbsent(tenantId, _ -> ds);
   }
 
 

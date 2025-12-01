@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import org.connected_sources.tenant.spi.db.TenantDbMigrator;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
@@ -26,15 +27,15 @@ public class FsTenantDatasourceResolver implements TenantDatasourceResolver
   private final Path baseDirectory;
   private final TenantDbMigrator migrator;
 
-  public FsTenantDatasourceResolver(@Value("${tenant.base-directory}") Path baseDirectory,
+  public FsTenantDatasourceResolver(@Value("${tenant.base-directory}") Path baseDir,
                                     TenantDbMigrator migrator) {
-    this.baseDirectory = Objects.requireNonNull(baseDirectory);
+    this.baseDirectory = Objects.requireNonNull(baseDir);
     this.migrator = migrator;
     this.pathResolver = new PathResolver(baseDirectory);
   }
 
   @Override
-  public DataSource createDataSource(String tenantId, DataSourceDescriptor descriptor) throws RuntimeException  {
+  public DataSource createDataSource(String tenantId, @NotNull DataSourceDescriptor descriptor) throws RuntimeException  {
     String url = descriptor.url();
     if( url == null || url.isBlank()) {
       if (tenantId == null || tenantId.isBlank()) {
@@ -67,8 +68,8 @@ public class FsTenantDatasourceResolver implements TenantDatasourceResolver
     return ds;
   }
 
-  private SQLiteDataSource getSqLiteDataSource(String tenantId) {
-    PathResolver pathResolver = new PathResolver(this.baseDirectory);
+  private @NotNull SQLiteDataSource getSqLiteDataSource(String tenantId) {
+    //PathResolver pathResolver = new PathResolver(this.baseDirectory);
     Path dbPath = pathResolver.sqlitePath(tenantId);
     File tenantDbFile = dbPath.toFile();
 

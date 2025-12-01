@@ -3,6 +3,7 @@ package org.connected_sources.notification.events;
 public enum EventType {
   ONBOARDING_REQUESTED,
   ONBOARDING_ACCEPTED,
+    ONBOARDING_REJECTED,
   ONBOARDING_ENABLED,
   ONBOARDING_FAILED,
   ONBOARDING_EXPIRED;

@@ -10,6 +10,7 @@ public class YamlCategoryResolver implements CategoryResolver {
   private final Map<String,String> mapping; // error -> incident category
 
   public YamlCategoryResolver(RedmineProperties props) {
+
     this.mapping = props.getIncident().getCategory().getMap();
   }
 

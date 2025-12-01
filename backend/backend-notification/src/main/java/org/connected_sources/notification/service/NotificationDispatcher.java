@@ -3,6 +3,8 @@ package org.connected_sources.notification.service;
 import java.time.*;
 import java.util.*;
 
+//import org.apache.tomcat.util.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.connected_sources.notification.events.EventType;
 import org.connected_sources.notification.incident.DelegatingCategoryResolver;
 import org.connected_sources.notification.incident.RedmineTicketLocator;
@@ -94,9 +96,11 @@ public class NotificationDispatcher {
     }
     repo.putIdem(key, ttl);
 
-
-    String auditId = repo.createAudit(eventType, templateId, channel, subject, hasPii, bodyMd);
-    scheduleSend(auditId, channel, subject, bodyMd, 1, eventType, ttl, hasPii, initialBackoff);
+    //TODO: add recipient key
+    String auditId = repo.createAudit(
+            eventType, /*templateId,*/ channel,
+            /*subject,*/ hasPii, bodyMd, recipientKey);
+    scheduleSend(auditId, channel, recipientKey, subject, bodyMd, 1, eventType, ttl, hasPii, initialBackoff);
     return DispatchOutcome.accepted(auditId);
   }
 
@@ -112,17 +116,23 @@ public class NotificationDispatcher {
     return enqueueInternal(template.id(), recipientKey, channel, subject, bodyMd, ttl, eventType.name(), hasPii);
   }
 
-  private void scheduleSend(String auditId, Channel channel, String subject, String bodyMd,
+  private void scheduleSend(String auditId, Channel channel, String recipientKey, String subject, String bodyMd,
                             int attempt, String eventType, Duration ttl, boolean hasPii, Duration delay) {
-    scheduler.schedule(() -> doSend(auditId, channel, subject, bodyMd, attempt, eventType, ttl, hasPii),
+    scheduler.schedule(() -> doSend(auditId, channel, recipientKey, subject, bodyMd, attempt, eventType, ttl, hasPii),
                        Instant.now().plus(delay));
   }
 
 
-  private void doSend(String auditId, Channel channel, String subject, String bodyMd,
+  private void doSend(String auditId, Channel channel, String recipientKey, String subject, String bodyMd,
                       int attempt, String eventType, Duration ttl, boolean hasPii) {
-    RenderedMessage msg = new RenderedMessage(TenantContextHolder.get().correlationId(),
-                                              TenantContextHolder.get().tenantId(), TenantContextHolder.get().userId(), channel, subject, bodyMd, Map.of());
+    RenderedMessage msg = new RenderedMessage(
+            TenantContextHolder.get().correlationId(),
+            TenantContextHolder.get().tenantId(),
+            TenantContextHolder.get().userId(),
+            channel, subject, bodyMd,
+            recipientKey,
+            Map.of("email", recipientKey)
+    );
 
 
     ChannelAdapter adapter = factory.resolve(channel);
@@ -133,7 +143,8 @@ public class NotificationDispatcher {
 
       if (!faulted && r.success()) {
         repo.markSent(auditId, r.providerMessageId());
-        if( eventType != EventType.ONBOARDING_REQUESTED.name() && eventType != EventType.ONBOARDING_ACCEPTED.name()) {
+        if( !eventType.equals(EventType.ONBOARDING_REQUESTED.name()) &&
+                !eventType.equals(EventType.ONBOARDING_ACCEPTED.name())) {
             log.log(TenantLogger.Category.AUDIT, INFO, "notification_sent", Map.of("auditId", auditId));
         }
         return;
@@ -156,19 +167,52 @@ public class NotificationDispatcher {
 
       if (attempt >= maxAttempts || (ttl != null && ttl != Duration.ZERO && Instant.now().isAfter(repo.auditCreatedAt(auditId).plus(ttl)))) {
         repo.markFailed(auditId, r.errorCode(), permanent);
+
+          log.log(TenantLogger.Category.AUDIT, ERROR, "notification_delivery_failed",
+                  Map.of(
+                          "auditId", auditId,
+                          "channel", channel.name(),
+                          "eventType", eventType,
+                          "recipientKey", recipientKey,
+                          "attempt", attempt,
+                          "maxAttempts", maxAttempts,
+                          "errorCode", r.errorCode(),
+                          "permanent", permanent,
+                          "correlationId", TenantContextHolder.get().correlationId()
+                  ));
         return;
       }
     }
     catch (Exception e) {
-      log.log(TenantLogger.Category.AUDIT, ERROR, "notification_delivery_error: " + e.getMessage() , Map.of("auditId", auditId));
+//      log.log(TenantLogger.Category.AUDIT, ERROR, "notification_delivery_error: " + e.getMessage() , Map.of("auditId", auditId));
+
+        Map<String, Object> payload = Map.ofEntries(
+                Map.entry("auditId", auditId),
+                Map.entry("channel", channel.name()),
+                Map.entry("eventType", eventType),
+                Map.entry("recipientKey", recipientKey),
+                Map.entry("attempt", attempt),
+                Map.entry("maxAttempts", maxAttempts),
+                Map.entry("ttlSeconds", ttl != null ? ttl.getSeconds() : null),
+                Map.entry("correlationId", TenantContextHolder.get().correlationId()),
+                Map.entry("tenantId", TenantContextHolder.get().tenantId()),
+                Map.entry("userId", TenantContextHolder.get().userId()),
+                Map.entry("errorClass", e.getClass().getName()),
+                Map.entry("errorMessage", e.getMessage()),
+                Map.entry("stackTrace", ExceptionUtils.getStackTrace(e))
+        );
+
+        log.log(TenantLogger.Category.AUDIT, ERROR, "notification_delivery_error",
+                payload);
     }
+
     Duration next = nextBackoff(attempt);
-    scheduleSend(auditId, channel, subject, bodyMd, attempt+1, eventType, ttl, hasPii, next);
+    scheduleSend(auditId, channel, recipientKey, subject, bodyMd, attempt+1, eventType, ttl, hasPii, next);
   }
 
 
   private Duration nextBackoff(int attempt) {
-    double mult = Math.min(Math.pow(backoffMult, attempt-1), maxBackoff.dividedBy(initialBackoff));
+    double mult = Math.min(Math.pow(backoffMult, attempt-1.0), maxBackoff.dividedBy(initialBackoff));
     long millis = Math.round(initialBackoff.toMillis() * mult);
     return Duration.ofMillis(Math.min(millis, maxBackoff.toMillis()));
   }

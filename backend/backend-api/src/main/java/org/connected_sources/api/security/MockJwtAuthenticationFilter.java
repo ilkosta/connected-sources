@@ -6,14 +6,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.connected_sources.shared.context.TenantContext;
 import org.connected_sources.shared.context.TenantContextHolder;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -39,9 +35,9 @@ public class MockJwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("MockJwtAuthenticationFilter called for: " + request.getRequestURI());
 
         String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+        String bearerPrefix =  "Bearer ";
+        if (authHeader != null && authHeader.startsWith(bearerPrefix)) {
+            String token = authHeader.substring(bearerPrefix.length());
             System.out.println("Token received: " + token);
 
             if (mockJwtService.validateToken(token)) {
@@ -52,7 +48,7 @@ public class MockJwtAuthenticationFilter extends OncePerRequestFilter {
 
                     String username = (String) claims.get("sub");
                     List<GrantedAuthority> authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role))
+                            .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
 
                     Authentication authentication =
@@ -102,10 +98,10 @@ public class MockJwtAuthenticationFilter extends OncePerRequestFilter {
     public static Long safeGetLong(Map<String, Object> claims, String key, Long defaultValue) {
         try {
             Object value = claims.get(key);
-            if (value instanceof Number) return ((Number) value).longValue();
-            if (value instanceof String) return Long.parseLong((String) value);
+            if (value instanceof Number number) return number.longValue();
+            if (value instanceof String s) return Long.parseLong(s);
             return defaultValue;
-        } catch (Exception e) {
+        } catch (Exception _) {
             return defaultValue;
         }
     }
@@ -114,14 +110,14 @@ public class MockJwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String value = request.getHeader(header);
             return value != null ? Long.parseLong(value) : defaultValue;
-        } catch (Exception e) {
+        } catch (Exception _) {
             return defaultValue;
         }
     }
 
     public static String safeGetString(Map<String, Object> claims, String key, String defaultValue) {
         Object value = claims.get(key);
-        if (value instanceof String) return (String) value;
+        if (value instanceof String s ) return s;
         if (value != null) return value.toString();
         return defaultValue;
     }

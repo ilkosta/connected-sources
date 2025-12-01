@@ -10,6 +10,6 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.17")
     implementation("org.springframework:spring-tx")
 
-    // Dipendenze di test
-    testImplementation("org.springframework:spring-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
+tasks.test { useJUnitPlatform() }

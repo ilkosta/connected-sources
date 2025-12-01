@@ -8,21 +8,24 @@ import java.util.*;
 
 @Component
 @Profile("dev | test") // Attivo solo in dev/test
-public class MockJwtService {
+public class MockJwtService implements JwtService {
 
-    private static final String MOCK_SECRET = "dev-mock-secret :)";
+//    private static final String MOCK_SECRET = "dev-mock-secret :)";
     private static final long EXPIRATION_TIME = 86400000; // 24 ore
 
+    @Override
     public String generateToken(UserDetails userDetails) {
         return "it will be what it will be...";
     }
 
+    @Override
     public boolean validateToken(String token) {
-        // In sviluppo, accetta sempre il token
+        //WARN: mocked validation
 //        return token != null && token.startsWith("mock_");
         return true;
     }
 
+    @Override
     public Map<String, Object> extractClaims(String token) {
         if (!validateToken(token)) {
             throw new RuntimeException("Invalid mock token");
@@ -47,6 +50,7 @@ public class MockJwtService {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public List<String> extractRoles(String token) {
         Map<String, Object> claims = extractClaims(token);
         return (List<String>) claims.get("roles");

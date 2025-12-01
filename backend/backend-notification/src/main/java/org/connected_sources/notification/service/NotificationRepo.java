@@ -7,7 +7,6 @@ import org.connected_sources.shared.context.TenantContextHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -48,17 +47,18 @@ public class NotificationRepo {
 
   /**
    * Create a new audit row in PENDING status.
-   * Stores redacted body if hasPii=true (hash), otherwise full.
+   * Stores redacted body if hasPii=true (at the moment a simple hash), otherwise full.
    * Returns the generated audit ULID/UUID.
    */
   public String createAudit(
           String eventType,
-          String templateId,
+//          String templateId,
           Channel channel,
-          String subject,
+//          String subject,
           boolean hasPii,
-          String bodyMd) {
-    String id = UUID.randomUUID().toString(); // swap to ULID if you prefer
+          String bodyMd,
+          String recipientKey) {
+    String id = UUID.randomUUID().toString(); // TODO: swap to ULID or UUIDv7,v1
 
     String bodyAuditStored = hasPii ? "REDACTED_PARTIAL_HASH" : "FULL";
     String bodyAudit = hasPii ? sha256(bodyMd) : bodyMd;
@@ -66,8 +66,8 @@ public class NotificationRepo {
     jdbc.update(
             "INSERT INTO notification_audit(" +
                     "id, correlation_id, tenant_id, user_id, template_id, channel, status, " +
-                    "created_at, event_type, ttl, has_pii, body_audit_stored, body_audit" +
-                    ") VALUES (?, ?, NULL, ?, NULL, ?::public.channel, 'PENDING', now(), ?, NULL, ?, ?, ?)",
+                    "created_at, event_type, ttl, has_pii, body_audit_stored, body_audit,recipient_key " +
+                    ") VALUES (?, ?, NULL, ?, NULL, ?::public.channel, 'PENDING', now(), ?, NULL, ?, ?, ?,?)",
             id,
             TenantContextHolder.get().correlationId(),
 //            TenantContextHolder.get().tenantId(),
@@ -77,7 +77,8 @@ public class NotificationRepo {
             eventType,
             hasPii,
             bodyAuditStored,
-            bodyAudit
+            bodyAudit,
+            recipientKey
                );
 
     return id;
@@ -132,7 +133,7 @@ public class NotificationRepo {
       StringBuilder sb = new StringBuilder(dig.length * 2);
       for (byte b : dig) sb.append(String.format("%02x", b));
       return sb.toString();
-    } catch (Exception e) {
+    } catch (Exception _) {
       return "HASH_ERR";
     }
   }

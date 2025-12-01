@@ -19,6 +19,9 @@ dependencies {
     // For @ConfigurationProperties binding
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    // for exceptions -> ExceptionUtils.getStackTrace
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+
     // Shared module
     implementation(project(":backend-shared"))
 //    implementation(project(":backend-logging-fs-impl"))
@@ -30,5 +33,6 @@ dependencies {
 //    }
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.sun.mail:jakarta.mail:2.0.2")
 }
 tasks.test { useJUnitPlatform() }

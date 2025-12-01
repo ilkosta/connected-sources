@@ -18,6 +18,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql") // let Spring Boot manage the version
 
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    implementation("org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.7.0")
 
     // JSON serialization
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.0")

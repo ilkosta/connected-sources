@@ -8,7 +8,6 @@ import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.service.CuratorContact;
 import org.connected_sources.shared.onboarding.OnboardingState;
 import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +87,10 @@ public class OnboardingRepo {
         """, Long.class, cmd.
 
           producerName(), cmd.email());
+      }
+
+      if(id==null) {
+        throw new RuntimeException("Onboarding request not found searching by producer name and email");
       }
 
       audit(id, "REQUESTED", cmd.requesterUserId(), Map.of("correlationId", correlationId));

@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev # dichiaro l'overwrite
   main:
     allow-circular-references: false
   datasource:

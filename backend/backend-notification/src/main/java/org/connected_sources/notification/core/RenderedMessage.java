@@ -9,5 +9,6 @@ public record RenderedMessage(
         Channel channel,
         String subject,
         String bodyMd,
+        String recipient,
         Map<String,Object> providerHints
 ) {}

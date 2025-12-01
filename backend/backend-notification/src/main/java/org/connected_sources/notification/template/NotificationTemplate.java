@@ -4,6 +4,7 @@ public enum NotificationTemplate {
   // --- onboarding ---
   ONBOARDING_REQUESTED("onboarding-request"),
   ONBOARDING_APPROVED("onboarding-approve"),
+    ONBOARDING_REJECTED("onboarding-rejected"),
   ONBOARDING_ENABLED("onboarding-enabled"),
   ONBOARDING_FAILED("onboarding-failed"),
   ONBOARDING_EXPIRED("onboarding-expired");

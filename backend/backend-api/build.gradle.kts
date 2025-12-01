@@ -17,7 +17,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
-//    implementation("org.springframework.security:spring-security-config")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     /// auth with jwt...
     implementation("org.springframework.security:spring-security-core")

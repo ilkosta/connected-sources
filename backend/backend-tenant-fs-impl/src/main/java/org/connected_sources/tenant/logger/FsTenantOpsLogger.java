@@ -66,7 +66,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
   public void log(Category category, Level level, String message, Map<String, Object> data) {
     // Enrich with context
     var ctx = TenantContextHolder.get();
-    var record = new LogRecord(
+    var rec = new LogRecord(
             Instant.now(),
             ctx != null ? ctx.tenantId() : null,
             ctx != null ? ctx.userId() : null,
@@ -76,7 +76,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
             message,
             data
     );
-    routeAndWrite(record);
+    routeAndWrite(rec);
   }
 
   /* =========================================================
@@ -89,6 +89,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
     // ( when a tenant has not yet been created)
     // so that I can monitor the `default` tenant's log directory:
     // if it changes it means that errors are occurring during provisioning
+    // useful to trigger alarms on filesystem change
     writeFsJsonl(r);
 
     if(Objects.equals(r.tenantId(), "default"))
@@ -109,7 +110,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
       Path dir = fsLocator.logsDir(tenantId);
       Path file = dir.resolve(dailyFileName());
 
-      Files.createDirectories(dir);
+//      Files.createDirectories(dir);
       // Append one line JSON record
       try (BufferedWriter w = Files.newBufferedWriter(file,
                                                       StandardCharsets.UTF_8,
@@ -142,7 +143,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
                     );
     try {
       return json.writeValueAsString(map);
-    } catch (JsonProcessingException e) {
+    } catch (JsonProcessingException _) {
       // Fallback: stringify message + minimal fields
       return "{\"ts\":\"" + r.ts() + "\",\"tenantId\":\"" + r.tenantId() + "\",\"level\":\"" + r.level().name()
               + "\",\"category\":\"" + r.category().name() + "\",\"message\":" + quote(r.message()) + "}";
@@ -190,7 +191,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
   private String toJson(Map<String, Object> data) {
     try {
       return json.writeValueAsString(data == null ? Map.of() : data);
-    } catch (JsonProcessingException e) {
+    } catch (JsonProcessingException _) {
       return "{}";
     }
   }
