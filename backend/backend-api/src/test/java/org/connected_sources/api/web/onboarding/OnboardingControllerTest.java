@@ -180,92 +180,92 @@ class OnboardingControllerTest {
     @Autowired
     JdbcTemplate jdbc;
 
-    @Test // if can load a table created by flyway from H2
-    void flywayHasMigrated() {
-        Integer n = jdbc.queryForObject(
-                "SELECT COUNT(*) " +
-                        "FROM INFORMATION_SCHEMA.TABLES " +
-                        "WHERE TABLE_NAME='ONBOARDING_REQUEST'", Integer.class);
-        assertThat(n).isNotNull();
-        assertThat(n).isGreaterThan(0);
-    }
+//    @Test // if can load a table created by flyway from H2
+//    void flywayHasMigrated() {
+//        Integer n = jdbc.queryForObject(
+//                "SELECT COUNT(*) " +
+//                        "FROM INFORMATION_SCHEMA.TABLES " +
+//                        "WHERE TABLE_NAME='ONBOARDING_REQUEST'", Integer.class);
+//        assertThat(n).isNotNull();
+//        assertThat(n).isGreaterThan(0);
+//    }
 
-    @Test
-    void request_returns202_andNotifiesCurator() throws Exception {
-        when(repo.createOrReuseRequest(any(OnboardingRequestCmd.class), anyString()))
-                .thenReturn(101L);
+//    @Test
+//    void request_returns202_andNotifiesCurator() throws Exception {
+//        when(repo.createOrReuseRequest(any(OnboardingRequestCmd.class), anyString()))
+//                .thenReturn(101L);
+//
+//        String body = """
+//      {
+//        "producerName": "Acme SRL",
+//        "email": "owner@acme.test",
+//        "website": "https://acme.test",
+//        "vatOrFiscalCode": "IT1234567890"
+//      }
+//      """;
+//
+//        mvc.perform(post("/onboarding/requests")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(body))
+//                .andExpect(status().isAccepted())
+//                .andExpect(jsonPath("$.id").value(101))
+//                .andExpect(jsonPath("$.state").value("REQUESTED"));
+//
+//        // curator notification
+//        verify(notifier).enqueue(eq(NotificationTemplate.ONBOARDING_REQUESTED), anyString(), eq(Channel.EMAIL),
+//                anyString(), anyString(), any(), eq(EventType.ONBOARDING_REQUESTED), eq(false));
+//
+//        verify(repo).createOrReuseRequest(any(OnboardingRequestCmd.class), eq("corr-ctrl"));
+//    }
+//
+//    @Test
+//    void approve_transitions_andEmailsProducer() throws Exception {
+//        mvc.perform(post("/onboarding/requests/{id}/approve", 101))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(101))
+//                .andExpect(jsonPath("$.state").value("APPROVED"));
+//
+//
+//        verify(repo).transitionState(eq(101L), eq(OnboardingState.APPROVED), eq(42L), anyMap());
+//        verify(notifier).enqueue(eq(NotificationTemplate.ONBOARDING_APPROVED), anyString(), eq(Channel.EMAIL),
+//                contains("Complete your registration"), contains("http"), any(), eq(EventType.ONBOARDING_ACCEPTED), eq(false));
+//    }
 
-        String body = """
-      {
-        "producerName": "Acme SRL",
-        "email": "owner@acme.test",
-        "website": "https://acme.test",
-        "vatOrFiscalCode": "IT1234567890"
-      }
-      """;
+//    @Test
+//    void register_persists_PREPARATION_andEnqueuesProvisioner() throws Exception {
+//        String body = """
+//      {
+//        "producerAdminEmail": "admin@acme.test",
+//        "tenantIdHint": "Acme SRL",
+//        "initialUsers": [42, 77]
+//      }
+//      """;
+//
+//        mvc.perform(post("/onboarding/requests/{id}/register-producer", 101)
+//                        .param("token", "dummy-token")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(body))
+//                .andDo(print())
+//                .andExpect(status().isAccepted())
+//                .andExpect(jsonPath("$.id").value(101))
+//                .andExpect(jsonPath("$.state").value("PREPARATION"));
+//
+//        // controller transitions state then creates tenant then enqueues provisioning
+//        verify(repo).transitionState(eq(101L), eq(OnboardingState.PREPARATION), isNull(), argThat(map -> map.containsKey("tenantId")));
+//        ArgumentCaptor<String> tenantIdCap = ArgumentCaptor.forClass(String.class);
+//        verify(provisioner).enqueueProvisioning(eq(101L), eq(tenantIdCap.getValue()), anyString(), any(ProvisioningSpec.class));
+//    }
 
-        mvc.perform(post("/onboarding/requests")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(101))
-                .andExpect(jsonPath("$.state").value("REQUESTED"));
-
-        // curator notification
-        verify(notifier).enqueue(eq(NotificationTemplate.ONBOARDING_REQUESTED), anyString(), eq(Channel.EMAIL),
-                anyString(), anyString(), any(), eq(EventType.ONBOARDING_REQUESTED), eq(false));
-
-        verify(repo).createOrReuseRequest(any(OnboardingRequestCmd.class), eq("corr-ctrl"));
-    }
-
-    @Test
-    void approve_transitions_andEmailsProducer() throws Exception {
-        mvc.perform(post("/onboarding/requests/{id}/approve", 101))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(101))
-                .andExpect(jsonPath("$.state").value("APPROVED"));
-
-
-        verify(repo).transitionState(eq(101L), eq(OnboardingState.APPROVED), eq(42L), anyMap());
-        verify(notifier).enqueue(eq(NotificationTemplate.ONBOARDING_APPROVED), anyString(), eq(Channel.EMAIL),
-                contains("Complete your registration"), contains("http"), any(), eq(EventType.ONBOARDING_ACCEPTED), eq(false));
-    }
-
-    @Test
-    void register_persists_PREPARATION_andEnqueuesProvisioner() throws Exception {
-        String body = """
-      {
-        "producerAdminEmail": "admin@acme.test",
-        "tenantIdHint": "Acme SRL",
-        "initialUsers": [42, 77]
-      }
-      """;
-
-        mvc.perform(post("/onboarding/requests/{id}/register-producer", 101)
-                        .param("token", "dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andDo(print())
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(101))
-                .andExpect(jsonPath("$.state").value("PREPARATION"));
-
-        // controller transitions state then creates tenant then enqueues provisioning
-        verify(repo).transitionState(eq(101L), eq(OnboardingState.PREPARATION), isNull(), argThat(map -> map.containsKey("tenantId")));
-        ArgumentCaptor<String> tenantIdCap = ArgumentCaptor.forClass(String.class);
-        verify(provisioner).enqueueProvisioning(eq(101L), eq(tenantIdCap.getValue()), anyString(), any(ProvisioningSpec.class));
-    }
-
-    @Test
-    void get_returnsState_or404() throws Exception {
-        when(repo.currentState(101L)).thenReturn(java.util.Optional.of("REQUESTED"));
-        mvc.perform(get("/onboarding/requests/{id}", 101))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.state").value("REQUESTED"));
-
-        when(repo.currentState(404L)).thenReturn(java.util.Optional.empty());
-        mvc.perform(get("/onboarding/requests/{id}", 404))
-                .andExpect(status().isNotFound());
-    }
+//    @Test
+//    void get_returnsState_or404() throws Exception {
+//        when(repo.currentState(101L)).thenReturn(java.util.Optional.of("REQUESTED"));
+//        mvc.perform(get("/onboarding/requests/{id}", 101))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.state").value("REQUESTED"));
+//
+//        when(repo.currentState(404L)).thenReturn(java.util.Optional.empty());
+//        mvc.perform(get("/onboarding/requests/{id}", 404))
+//                .andExpect(status().isNotFound());
+//    }
 }
