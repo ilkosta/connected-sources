@@ -1,9 +1,11 @@
-//package org.connected_sources.notification.service;
+package org.connected_sources.notification.model;
 
 import org.connected_sources.notification.core.Channel;
 
-//public record CuratorContact(
-//        Long userId,
-//        Channel channel,
-//        String address) {
-//}
+public record CuratorContact(
+        Long userId,
+        Channel channel,
+        String address){
+
+
+}

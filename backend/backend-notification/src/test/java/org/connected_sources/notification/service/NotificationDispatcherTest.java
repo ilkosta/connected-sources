@@ -19,9 +19,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
+import jakarta.mail.internet.MimeMessage;
 import org.mockito.ArgumentCaptor;
-
+import org.mockito.Mock;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -33,7 +36,7 @@ import static org.mockito.Mockito.*;
  * - TTL finite vs infinite
  * - Redmine open-ticket reuse and creation paths
  */
-class NotificationDispatcherTest {
+public class NotificationDispatcherTest {
 
     private NotificationRepo repo;
     private DelegatingCategoryResolver categoryResolver;
@@ -100,9 +103,9 @@ class NotificationDispatcherTest {
         assertThat(out.isDuplicate()).isTrue();
         verify(repo, never()).createAudit(
                 anyString(),
-//                eq(NotificationTemplate.ONBOARDING_ENABLED.id()),
+                eq(NotificationTemplate.ONBOARDING_ENABLED.id()),
                 any(Channel.class),
-//                anyString(),
+                anyString(),
                 anyBoolean(),
                 anyString(),
                 anyString()
@@ -114,12 +117,7 @@ class NotificationDispatcherTest {
     void retrySchedules_forTransientAndPermanent() {
         // New audit id flow
         when(repo.existsIdem(anyString())).thenReturn(false);
-        when(repo.createAudit(
-                anyString(),
-//                anyString(),
-                any(Channel.class),
-//                anyString(),
-                anyBoolean(), anyString(), anyString())).thenReturn("aid-1");
+        when(repo.createAudit(anyString(), anyString(), any(Channel.class), anyString(), anyBoolean(), anyString(), anyString())).thenReturn("aid-1");
 
         // First attempt: transient failure
         emailStub.setMode(StubChannelAdapter.Mode.TRANSIENT_FAIL);
@@ -146,7 +144,7 @@ class NotificationDispatcherTest {
         // attach existing ticket, and schedule another attempt (since attempts not yet exhausted)
         verify(ticketLocator, never()).createTicket(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
         verify(repo).attachTicket("aid-1", "TICK-77");
-        assertThat(scheduler.tasks).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(scheduler.tasks.size()).isGreaterThanOrEqualTo(2);
     }
 
     // ---------- TTL finite expires -> mark FAILED ----------
@@ -154,11 +152,8 @@ class NotificationDispatcherTest {
     void ttlFinite_expiresAndMarksFailed() {
         when(repo.existsIdem(anyString())).thenReturn(false);
         when(repo.createAudit(anyString(),
-//                anyString(),
-                              any(Channel.class),
-//                              anyString(),
-                anyBoolean(),
-                              anyString(), anyString())).thenReturn("aid-2");
+                anyString(), any(Channel.class), anyString(),
+                anyBoolean(), anyString(), anyString())).thenReturn("aid-2");
         // Created 25h ago; with TTL 24h, should expire on retry
         when(repo.auditCreatedAt("aid-2")).thenReturn(Instant.now().minus(Duration.ofHours(25)));
 
@@ -178,12 +173,8 @@ class NotificationDispatcherTest {
     void ttlInfinite_neverBlockedByTtl() {
         when(repo.existsIdem(anyString())).thenReturn(false);
         when(repo.createAudit(anyString(),
-//                anyString(),
-                              any(Channel.class),
-//                              anyString(),
-                anyBoolean(),
-                              anyString(),
-                              anyString())).thenReturn("aid-3");
+                anyString(), any(Channel.class), anyString(),
+                anyBoolean(), anyString(), anyString())).thenReturn("aid-3");
         // Even if very old, Duration.ZERO means infinite TTL
         when(repo.auditCreatedAt("aid-3")).thenReturn(Instant.now().minus(Duration.ofDays(3650)));
 
@@ -202,11 +193,8 @@ class NotificationDispatcherTest {
     @Test
     void permanentError_reusesOpenTicketAndPersists() {
         when(repo.existsIdem(anyString())).thenReturn(false);
-        when(repo.createAudit(anyString(),
-//                              anyString(),
-                any(Channel.class),
-//                              anyString(),
-                              anyBoolean(),
+        when(repo.createAudit(anyString(), anyString(),
+                any(Channel.class), anyString(), anyBoolean(),
                 anyString(), anyString())).thenReturn("aid-4");
 
         emailStub.setMode(StubChannelAdapter.Mode.PERMANENT_FAIL);
@@ -229,11 +217,8 @@ class NotificationDispatcherTest {
     @Test
     void permanentError_createsTicketWhenNoneOpen() {
         when(repo.existsIdem(anyString())).thenReturn(false);
-        when(repo.createAudit(anyString(),
-//                              anyString(),
-                any(Channel.class),
-//                              anyString(),
-                              anyBoolean(),
+        when(repo.createAudit(anyString(), anyString(),
+                any(Channel.class), anyString(), anyBoolean(),
                 anyString(), anyString())).thenReturn("aid-5");
 
         emailStub.setMode(StubChannelAdapter.Mode.PERMANENT_FAIL);
@@ -267,13 +252,9 @@ class NotificationDispatcherTest {
         when(factory.resolve(Channel.EMAIL)).thenReturn(adapter);
 
         when(repo.existsIdem(anyString())).thenReturn(false);
-        when(repo.createAudit(anyString(),
-//                              anyString(),
-                any(Channel.class),
-//                              anyString(),
-                              anyBoolean(),
-                anyString(),
-                              anyString()))
+        when(repo.createAudit(anyString(), anyString(),
+                any(Channel.class), anyString(), anyBoolean(),
+                anyString(), anyString()))
                 .thenReturn("aid-email-1");
 
         when(adapter.send(any(RenderedMessage.class))).thenReturn(sendResult);

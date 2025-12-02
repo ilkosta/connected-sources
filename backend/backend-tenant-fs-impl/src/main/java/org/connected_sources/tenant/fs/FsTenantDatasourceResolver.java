@@ -27,9 +27,9 @@ public class FsTenantDatasourceResolver implements TenantDatasourceResolver
   private final Path baseDirectory;
   private final TenantDbMigrator migrator;
 
-  public FsTenantDatasourceResolver(@Value("${tenant.base-directory}") Path baseDir,
+  public FsTenantDatasourceResolver(@Value("${tenant.base-directory}") Path baseDirectory,
                                     TenantDbMigrator migrator) {
-    this.baseDirectory = Objects.requireNonNull(baseDir);
+    this.baseDirectory = Objects.requireNonNull(baseDirectory);
     this.migrator = migrator;
     this.pathResolver = new PathResolver(baseDirectory);
   }
@@ -69,7 +69,7 @@ public class FsTenantDatasourceResolver implements TenantDatasourceResolver
   }
 
   private @NotNull SQLiteDataSource getSqLiteDataSource(String tenantId) {
-    //PathResolver pathResolver = new PathResolver(this.baseDirectory);
+    PathResolver pathResolver = new PathResolver(this.baseDirectory);
     Path dbPath = pathResolver.sqlitePath(tenantId);
     File tenantDbFile = dbPath.toFile();
 

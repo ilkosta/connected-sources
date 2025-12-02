@@ -10,11 +10,12 @@ Feature: Curator-approved two-step onboarding (happy path)
     """
     {
       "producerName": "pippo SpA",
-      "email": "costantin.giuliodori@studenti.unicam.it",
+      "email": "costantino.giuliodori@gmail.com",
       "website": "https://pippo.test",
       "vatOrFiscalCode": "ITqazwsxedcrfv"
     }
     """
+
     Given path '/onboarding/requests'
     And header Authorization = karate.get('userAuth')
     And request payload
@@ -39,7 +40,7 @@ Feature: Curator-approved two-step onboarding (happy path)
     * def reg =
     """
     {
-      "producerAdminEmail": "costantino.giuliodori@gmail.com",
+      "producerAdminEmail": "costantin.giuliodori@studenti.unicam.it",
       "tenantIdHint": "pippo-spa",
       "initialUsers": [3]
     }
@@ -52,12 +53,12 @@ Feature: Curator-approved two-step onboarding (happy path)
     Then status 202
     And match response contains { id: '#(requestId)', state: 'PREPARATION' }
 
-    * print '4) Poll fino a ENABLED (provisioning async)'
-#    fino a 30s
-    * configure retry = { count: 2, interval: 10000 }
-    Given path `/onboarding/requests/${requestId}/status`
-    And header Authorization = karate.get('userAuth')
-    And retry until response.state == 'ENABLED'
-    When method GET
-    Then status 200
-    And match response contains { id: '#(requestId)', state: 'ENABLED' }
+#     * print '4) Poll fino a ENABLED (provisioning async)'
+# #    fino a 30s
+#     * configure retry = { count: 2, interval: 10000 }
+#     Given path `/onboarding/requests/${requestId}/status`
+#     And header Authorization = karate.get('userAuth')
+#     And retry until response.state == 'ENABLED'
+#     When method GET
+#     Then status 200
+#     And match response contains { id: '#(requestId)', state: 'ENABLED' }

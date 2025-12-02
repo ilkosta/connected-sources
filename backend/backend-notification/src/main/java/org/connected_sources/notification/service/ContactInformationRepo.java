@@ -1,6 +1,8 @@
 package org.connected_sources.notification.service;
 
 
+import org.connected_sources.notification.model.CuratorContact;
+
 import java.util.List;
 import java.util.Optional;
 

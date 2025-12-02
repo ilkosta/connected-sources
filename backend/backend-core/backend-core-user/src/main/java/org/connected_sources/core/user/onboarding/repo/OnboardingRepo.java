@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.connected_sources.core.user.onboarding.model.OnboardingRequestCmd;
 import org.connected_sources.core.user.onboarding.model.OnboardingSummary;
 import org.connected_sources.notification.core.Channel;
-import org.connected_sources.notification.service.CuratorContact;
+import org.connected_sources.notification.model.CuratorContact;
 import org.connected_sources.shared.onboarding.OnboardingState;
 import org.connected_sources.shared.tenantdb.DataSourceDescriptor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -89,10 +89,6 @@ public class OnboardingRepo {
           producerName(), cmd.email());
       }
 
-      if(id==null) {
-        throw new RuntimeException("Onboarding request not found searching by producer name and email");
-      }
-
       audit(id, "REQUESTED", cmd.requesterUserId(), Map.of("correlationId", correlationId));
       return id;
 
@@ -133,9 +129,9 @@ public class OnboardingRepo {
                     key, Timestamp.from(now), ttl.getSeconds());
             return res != null && res;
         }
-        catch (NullPointerException e) {
-            throw new RuntimeException("nessun valore tornato dalla funzione insert_if_expired", e);
-        }
+//        catch (NullPointerException e) {
+//            throw new RuntimeException("nessun valore tornato dalla funzione insert_if_expired", e);
+//        }
         catch (Exception e) {
             throw new RuntimeException("fallita la query " + sql, e);
         }

@@ -98,8 +98,8 @@ public class NotificationDispatcher {
 
     //TODO: add recipient key
     String auditId = repo.createAudit(
-            eventType, /*templateId,*/ channel,
-            /*subject,*/ hasPii, bodyMd, recipientKey);
+            eventType, templateId, channel,
+            subject, hasPii, bodyMd, recipientKey);
     scheduleSend(auditId, channel, recipientKey, subject, bodyMd, 1, eventType, ttl, hasPii, initialBackoff);
     return DispatchOutcome.accepted(auditId);
   }
@@ -143,8 +143,7 @@ public class NotificationDispatcher {
 
       if (!faulted && r.success()) {
         repo.markSent(auditId, r.providerMessageId());
-        if( !eventType.equals(EventType.ONBOARDING_REQUESTED.name()) &&
-                !eventType.equals(EventType.ONBOARDING_ACCEPTED.name())) {
+        if( eventType != EventType.ONBOARDING_REQUESTED.name() && eventType != EventType.ONBOARDING_ACCEPTED.name()) {
             log.log(TenantLogger.Category.AUDIT, INFO, "notification_sent", Map.of("auditId", auditId));
         }
         return;
@@ -212,7 +211,7 @@ public class NotificationDispatcher {
 
 
   private Duration nextBackoff(int attempt) {
-    double mult = Math.min(Math.pow(backoffMult, attempt-1.0), maxBackoff.dividedBy(initialBackoff));
+    double mult = Math.min(Math.pow(backoffMult, attempt-1), maxBackoff.dividedBy(initialBackoff));
     long millis = Math.round(initialBackoff.toMillis() * mult);
     return Duration.ofMillis(Math.min(millis, maxBackoff.toMillis()));
   }

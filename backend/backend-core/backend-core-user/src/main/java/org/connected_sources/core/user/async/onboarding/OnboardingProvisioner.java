@@ -5,17 +5,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.connected_sources.core.user.onboarding.model.ProvisioningSpec;
 import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.events.EventType;
-import org.connected_sources.notification.service.CuratorContact;
+import org.connected_sources.notification.model.CuratorContact;
 import org.connected_sources.notification.service.NotificationDispatcher;
 import org.connected_sources.notification.service.NotificationRepo;
-import org.connected_sources.notification.template.NotificationTemplate.*;
 import org.connected_sources.shared.async.ContextAwareTaskDecorator;
 import org.connected_sources.shared.logging.TenantLogger;
 import org.connected_sources.shared.onboarding.OnboardingState;
 import org.connected_sources.tenant.spi.TenantLifecycleManager;
 import org.connected_sources.tenant.spi.db.TenantDbMigrator;
 import org.connected_sources.core.user.onboarding.repo.OnboardingRepo;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.TaskScheduler;
@@ -48,7 +46,7 @@ import static org.connected_sources.notification.template.NotificationTemplate.*
  */
 @Component
 public class OnboardingProvisioner {
-  private static String TENANT_PREFIX = "Tenant ";
+
   private final TaskExecutor exec;
   private final TaskScheduler scheduler;
   private final OnboardingRepo repo;
@@ -100,9 +98,8 @@ public class OnboardingProvisioner {
         repo.setTenantState(tenantId, OnboardingState.ENABLED);
         repo.transitionState(requestId, OnboardingState.ENABLED, null, Map.of("tenantId", tenantId));
         // 4) Notify requester & producer admin
-
         notifier.enqueue(ONBOARDING_ENABLED, in.producerAdminEmail(), Channel.EMAIL,
-                         "Your workspace is ready", TENANT_PREFIX +tenantId+" enabled.", Duration.ofHours(24),
+                         "Your workspace is ready", "Tenant "+tenantId+" enabled.", Duration.ofHours(24),
                          EventType.ONBOARDING_ENABLED, false);
       } catch (Exception e) {
 
@@ -117,7 +114,7 @@ public class OnboardingProvisioner {
                 c -> {
                   // open incident & notify curator
                   notifier.enqueue(ONBOARDING_FAILED, c.address(), Channel.EMAIL,
-                          "Provisioning failed - " +tenantId, TENANT_PREFIX +tenantId+" error: "+e.getMessage(), Duration.ofHours(24),
+                          "Provisioning failed - " +tenantId, "Tenant "+tenantId+" error: "+e.getMessage(), Duration.ofHours(24),
                           EventType.ONBOARDING_FAILED, false);
                 }
         );
@@ -130,9 +127,7 @@ public class OnboardingProvisioner {
         }
 
         // compensate: best-effort cleanup
-        try { fs.deleteTenantArtifacts(tenantId); } catch(Exception _) {
-          // better to do nothing for problem/incident management
-        }
+        try { fs.deleteTenantArtifacts(tenantId); } catch(Exception ignore) {}
 
         // for debug...
           try {
@@ -165,7 +160,7 @@ public class OnboardingProvisioner {
                 .forEach(
                 c -> {
                   notifier.enqueue(ONBOARDING_EXPIRED, c.address(), Channel.EMAIL,
-                          "Provisioning expired", TENANT_PREFIX +tenantId+" did not complete in time.", Duration.ofHours(24),
+                          "Provisioning expired", "Tenant "+tenantId+" did not complete in time.", Duration.ofHours(24),
                           EventType.ONBOARDING_EXPIRED, false);
                 }
         );

@@ -66,7 +66,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
   public void log(Category category, Level level, String message, Map<String, Object> data) {
     // Enrich with context
     var ctx = TenantContextHolder.get();
-    var rec = new LogRecord(
+    var record = new LogRecord(
             Instant.now(),
             ctx != null ? ctx.tenantId() : null,
             ctx != null ? ctx.userId() : null,
@@ -76,7 +76,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
             message,
             data
     );
-    routeAndWrite(rec);
+    routeAndWrite(record);
   }
 
   /* =========================================================
@@ -143,7 +143,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
                     );
     try {
       return json.writeValueAsString(map);
-    } catch (JsonProcessingException _) {
+    } catch (JsonProcessingException e) {
       // Fallback: stringify message + minimal fields
       return "{\"ts\":\"" + r.ts() + "\",\"tenantId\":\"" + r.tenantId() + "\",\"level\":\"" + r.level().name()
               + "\",\"category\":\"" + r.category().name() + "\",\"message\":" + quote(r.message()) + "}";
@@ -191,7 +191,7 @@ public class FsTenantOpsLogger implements TenantOpsLogger {
   private String toJson(Map<String, Object> data) {
     try {
       return json.writeValueAsString(data == null ? Map.of() : data);
-    } catch (JsonProcessingException _) {
+    } catch (JsonProcessingException e) {
       return "{}";
     }
   }

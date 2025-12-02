@@ -10,7 +10,7 @@ import java.util.*;
 @Profile("dev | test") // Attivo solo in dev/test
 public class MockJwtService implements JwtService {
 
-//    private static final String MOCK_SECRET = "dev-mock-secret :)";
+    private static final String MOCK_SECRET = "dev-mock-secret :)";
     private static final long EXPIRATION_TIME = 86400000; // 24 ore
 
     @Override

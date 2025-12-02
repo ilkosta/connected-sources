@@ -14,6 +14,7 @@ import org.connected_sources.notification.core.BaseChannelAdapter;
 import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.core.RenderedMessage;
 import org.connected_sources.notification.core.SendResult;
+import org.connected_sources.notification.incident.DelegatingCategoryResolver;
 import org.connected_sources.notification.service.ContactInformationRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,8 @@ public class EmailChannel extends BaseChannelAdapter {
 
     private final Parser mdParser = Parser.builder().build();
     private final HtmlRenderer mdHtmlRenderer = HtmlRenderer.builder().build();
+//  private final TextContentRenderer mdTxtRenderer = TextContentRenderer.builder().build();
+
 
     public EmailChannel(JavaMailSender mailSender, ContactInformationRepo contacts,
                         @Value("${notification.email.from}") String defaultFrom) {
@@ -167,7 +170,7 @@ public class EmailChannel extends BaseChannelAdapter {
         try {
             String[] ids = mm.getHeader("Message-ID");
             return (ids != null && ids.length > 0) ? ids[0] : null;
-        } catch (MessagingException _) {
+        } catch (MessagingException ignored) {
             return null;
         }
     }
@@ -178,7 +181,7 @@ public class EmailChannel extends BaseChannelAdapter {
     private SmtpError classifySmtpError(Exception e) {
         // Defaults
         SmtpError out = new SmtpError("EMAIL_SEND_FAILED", false);
-        final String SMTP_ = "SMTP_";
+
         Throwable cause = e;
         while (cause != null) {
             // Address issues: 550 5.1.1 etc. -> permanent
@@ -190,8 +193,8 @@ public class EmailChannel extends BaseChannelAdapter {
                     var ne = sfe.getNextException();
                     if (ne != null) {
                         var code = smtpReplyCode(ne.getMessage());
-                        if (code >= 500 && code < 600) return new SmtpError(SMTP_ + code, true);
-                        if (code >= 400 && code < 500) return new SmtpError(SMTP_ + code, false);
+                        if (code >= 500 && code < 600) return new SmtpError("SMTP_" + code, true);
+                        if (code >= 400 && code < 500) return new SmtpError("SMTP_" + code, false);
                     }
                     // Without code: treat as transient network issue
                     return new SmtpError("SMTP_SEND_FAILED", false);
@@ -200,12 +203,11 @@ public class EmailChannel extends BaseChannelAdapter {
                     var ne = me.getNextException();
                     if (ne != null) {
                         var code = smtpReplyCode(ne.getMessage());
-                        if (code >= 500 && code < 600) return new SmtpError(SMTP_ + code, true);
-                        if (code >= 400 && code < 500) return new SmtpError(SMTP_ + code, false);
+                        if (code >= 500 && code < 600) return new SmtpError("SMTP_" + code, true);
+                        if (code >= 400 && code < 500) return new SmtpError("SMTP_" + code, false);
                     }
                 }
                 default -> {
-                  //return new SmtpError("SMTP_SEND_FAILED_UNMANAGED", false);
                 }
             }
             cause = cause.getCause();
@@ -220,7 +222,7 @@ public class EmailChannel extends BaseChannelAdapter {
         if (msg == null || msg.length() < 3) return -1;
         try {
             return Integer.parseInt(msg.substring(0, 3));
-        } catch (NumberFormatException _) {
+        } catch (NumberFormatException nfe) {
             return -1;
         }
     }

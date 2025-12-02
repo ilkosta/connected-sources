@@ -21,6 +21,7 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
   private final Map<String, DataSource> cache = new ConcurrentHashMap<>();
   private final FsTenantDatasourceResolver datasourceResolver;
   private final TenantDescriptorStore store;
+//  private final Map<DbProvider, TenantDatasourceResolver> resolvers = new EnumMap<>(DbProvider.class);
 
   public FsTenantDatasourceRegistry(TenantDescriptorStore store, FsTenantDatasourceResolver datasourceResolver) {
     this.store = store;
@@ -38,7 +39,7 @@ public class FsTenantDatasourceRegistry implements TenantDatasourceRegistry {
 
     DataSourceDescriptor d = store.readDescriptor(tenantId);
     var ds = datasourceResolver.createDataSource(tenantId, d);
-    return cache.computeIfAbsent(tenantId, _ -> ds);
+    return cache.computeIfAbsent(tenantId, __ -> ds);
   }
 
 

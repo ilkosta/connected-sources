@@ -7,6 +7,7 @@ import org.connected_sources.shared.context.TenantContextHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -52,9 +53,9 @@ public class NotificationRepo {
    */
   public String createAudit(
           String eventType,
-//          String templateId,
+          String templateId,
           Channel channel,
-//          String subject,
+          String subject,
           boolean hasPii,
           String bodyMd,
           String recipientKey) {
@@ -133,7 +134,7 @@ public class NotificationRepo {
       StringBuilder sb = new StringBuilder(dig.length * 2);
       for (byte b : dig) sb.append(String.format("%02x", b));
       return sb.toString();
-    } catch (Exception _) {
+    } catch (Exception e) {
       return "HASH_ERR";
     }
   }

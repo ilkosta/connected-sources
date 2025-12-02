@@ -3,9 +3,8 @@ package org.connected_sources.api.web.onboarding;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.connected_sources.api.dto.onboarding.*;
-import org.connected_sources.core.user.User;
+import org.connected_sources.core.user.model.User;
 import org.connected_sources.core.user.UserRepository;
 import org.connected_sources.core.user.async.onboarding.OnboardingProvisioner;
 import org.connected_sources.core.user.onboarding.model.OnboardingRequestCmd;
@@ -35,8 +34,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 
 /* DESIGN
@@ -59,8 +56,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/onboarding/requests")
 @Validated
 public class OnboardingController {
-  private static final String SUBMITTEDAT = "submitted_at";
-  private final OnboardingRepo repo;
+    private final OnboardingRepo repo;
     //  private final TenantRepo tenantRepo;
     private final NotificationDispatcher notifier;
     private final OnboardingProvisioner provisioner; // async entry
@@ -72,15 +68,15 @@ public class OnboardingController {
     private final ContactInformationRepo contactRepo;
     private final UserRepository userRepository;
 
-    private static final boolean noPii = false;
-    private static final boolean hasPii = true;
+    private final boolean noPii = false;
+    private final boolean hasPii = true;
 
     public OnboardingController(OnboardingRepo repo,
 //                              TenantRepo tenantRepo,
                                 NotificationDispatcher notifier,
                                 OnboardingProvisioner provisioner,
                                 TenantResourcePlanner tenantResourcePlanner,
-                                @Value("${backend.base-url}") String baseUrl,
+                                @Value("${backend.base-url}") String base_url,
                                 @Value("${tenant.base-directory}") Path baseDir,
                                 @Value("${onboarding.request.ttl}") String onboardingRequestTtlSeconds, TemplateService templateService, ContactInformationRepo contactRepo,
                                 UserRepository userRepository) {
@@ -89,7 +85,7 @@ public class OnboardingController {
         this.notifier = notifier;
         this.provisioner = provisioner;
         this.tenantResourcePlanner = tenantResourcePlanner;
-        this.baseUrl = baseUrl;
+        this.baseUrl = base_url;
         this.baseDir = baseDir;
         this.onboardingRequestTtl = Long.valueOf(onboardingRequestTtlSeconds);
         this.templateService = templateService;
@@ -97,7 +93,7 @@ public class OnboardingController {
 
         // Log per debug
         System.out.println("OnboardingController created with:");
-        System.out.println("base_url: " + baseUrl);
+        System.out.println("base_url: " + base_url);
         System.out.println("baseDir: " + baseDir);
         this.userRepository = userRepository;
     }
@@ -151,7 +147,7 @@ public class OnboardingController {
             vars.put("website", in.website());
             vars.put("vatOrFiscalCode", in.vatOrFiscalCode());
             vars.put("correlationId", tc.correlationId());
-            vars.put(SUBMITTEDAT, java.time.OffsetDateTime.now().toString());
+            vars.put("submittedAt", java.time.OffsetDateTime.now().toString());
 
             vars.put("approveUrl", baseUrl + "/onboarding/requests/" + id + "/approve");
             vars.put("rejectUrl", baseUrl + "/onboarding/requests/" + id + "/reject");
@@ -201,7 +197,9 @@ public class OnboardingController {
                     id, OnboardingState.APPROVED,
                     /*curator*/ TenantContextHolder.get().userId(),
                     Map.of("token", token, "link", link));
-        } catch (IllegalStateException | IllegalArgumentException _ ) {
+        } catch (IllegalStateException _ ) {
+            return ResponseEntity.badRequest().build();
+        } catch ( IllegalArgumentException _) {
             return ResponseEntity.badRequest().build();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -221,7 +219,7 @@ public class OnboardingController {
             vars.put("vatOrFiscalCode", s.vatOrFiscalCode());
             vars.put("correlationId", s.correlationId());
             vars.put("link", link);
-            vars.put(SUBMITTEDAT, s.created_at().toLocalDateTime().format(
+            vars.put("submittedAt", s.created_at().toLocalDateTime().format(
                     DateTimeFormatter
                             .ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withLocale(Locale.ITALIAN)));
@@ -276,12 +274,12 @@ public class OnboardingController {
             throw new RuntimeException(e);
         }
 
-        UnaryOperator<OnboardingSummary> sendRejection = s -> {
+        Function<OnboardingSummary, OnboardingSummary> sendRejection = (s) -> {
             var requestingUser = userRepository.findByUserId(s.requester());
             if (requestingUser.isEmpty()) return s;
 
             User requester = requestingUser.get();
-            rejectionData.put(SUBMITTEDAT, s.created_at().toLocalDateTime().format(
+            rejectionData.put("submittedAt", s.created_at().toLocalDateTime().format(
                     DateTimeFormatter
                             .ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withLocale(Locale.ITALIAN)));
