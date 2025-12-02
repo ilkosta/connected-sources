@@ -26,7 +26,7 @@
 ### vincoli normativi
 
 * GDPR
-* ISO27701:2019 – Privacy Information Management
+* NIS2
 
 ## 🔐 requisiti non funzionali
 
