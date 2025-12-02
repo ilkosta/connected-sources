@@ -12,6 +12,6 @@ public interface JwtService {
 
     Map<String, Object> extractClaims(String token);
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     List<String> extractRoles(String token);
 }

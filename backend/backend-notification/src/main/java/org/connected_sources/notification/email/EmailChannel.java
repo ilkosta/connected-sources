@@ -14,7 +14,6 @@ import org.connected_sources.notification.core.BaseChannelAdapter;
 import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.core.RenderedMessage;
 import org.connected_sources.notification.core.SendResult;
-import org.connected_sources.notification.incident.DelegatingCategoryResolver;
 import org.connected_sources.notification.service.ContactInformationRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

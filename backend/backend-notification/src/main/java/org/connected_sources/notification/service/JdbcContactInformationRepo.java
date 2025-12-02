@@ -1,6 +1,5 @@
 package org.connected_sources.notification.service;
 
-import org.connected_sources.notification.core.Channel;
 import org.connected_sources.notification.model.CuratorContact;
 import org.connected_sources.notification.model.CuratorContactRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

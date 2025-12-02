@@ -1,28 +1,25 @@
 package org.connected_sources.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-//import javax.sql.DataSource;
-import java.util.Arrays;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @ConfigurationPropertiesScan
 @SpringBootApplication
 @ComponentScan(
     basePackages = {
         "org.connected_sources",
-        "org.connected_sources.tenant.spi.db"
+//        "org.connected_sources.tenant.spi.db"
     })
+@EnableJpaRepositories(
+        basePackages = "org.connected_sources.core"
+)
+@EntityScan(
+        basePackages = "org.connected_sources.core"
+)
 public class BackendApiApplication  {
 
     public static void main(String[] args) {

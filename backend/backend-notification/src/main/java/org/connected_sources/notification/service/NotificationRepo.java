@@ -7,7 +7,6 @@ import org.connected_sources.shared.context.TenantContextHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;

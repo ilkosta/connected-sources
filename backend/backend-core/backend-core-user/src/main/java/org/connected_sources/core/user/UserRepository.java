@@ -1,49 +1,23 @@
 package org.connected_sources.core.user;
 
-import org.connected_sources.core.user.model.User;
-import org.connected_sources.core.user.model.UserRowMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.connected_sources.core.user.model.UserEntity;
 import java.util.Optional;
 
 @Repository
-public class UserRepository {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-  private final JdbcTemplate jdbc;
-
-  public UserRepository(JdbcTemplate jdbcTemplate) {
-    this.jdbc = jdbcTemplate;
-  }
-
-  public Optional<User> findByUserId(Long userId) {
-//      try {
-//          User user = jdbc.queryForObject(
-//                  "select * from app_user where user_id = ?",
-//                  new UserRowMapper(),
-//                  userId
-//          );
-//          return Optional.ofNullable(user);
-//      } catch (EmptyResultDataAccessException e) {
-//          return Optional.empty();
-//      }
-
-      List<User> results = jdbc.query(
-              "select * from app_user where user_id = ?",
-              new UserRowMapper(),
-              userId
-      );
-
-      return results.isEmpty()
-              ? Optional.empty()
-              : Optional.of(results.getFirst());
-  }
-
-  public Optional<User> findByUserId(String userId) {
-      return findByUserId(Long.parseLong(userId));
+    // alias, ... for easy refactoring
+    default Optional<UserEntity> findByUserId(Long userId) {
+        return findById(userId);
     }
 
-}
+    default Optional<UserEntity> findByUserId(String userId) {
+        return findByUserId(Long.parseLong(userId));
+    }
 
+    Optional<UserEntity> findByUsername(String username);
+
+    Optional<UserEntity> findByEmail(String email);
+}

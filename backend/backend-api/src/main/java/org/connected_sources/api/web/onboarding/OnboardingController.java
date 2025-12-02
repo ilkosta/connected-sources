@@ -140,7 +140,7 @@ public class OnboardingController {
             var vars = new java.util.HashMap<String, Object>();
 
             var requestingUser = userRepository.findByUserId(userId);
-            vars.put("requesterUserId", requestingUser.get().full_name());
+            vars.put("requesterUserId", requestingUser.get().getFullName());
             vars.put("producerName", in.producerName());
 //      vars.put("requesterEmail",    in.email());
             vars.put("email", in.email());
@@ -209,7 +209,7 @@ public class OnboardingController {
             var requestingUser = userRepository.findByUserId(s.requester());
             if (requestingUser.isEmpty()) return s;
 
-            User requester = requestingUser.get();
+            User requester = requestingUser.get().toDomain();
             var vars = new java.util.HashMap<String, Object>();
             vars.put("requesterUserId", requester.username());
             vars.put("producerName", s.producerName());
@@ -278,7 +278,7 @@ public class OnboardingController {
             var requestingUser = userRepository.findByUserId(s.requester());
             if (requestingUser.isEmpty()) return s;
 
-            User requester = requestingUser.get();
+            User requester = requestingUser.get().toDomain();
             rejectionData.put("submittedAt", s.created_at().toLocalDateTime().format(
                     DateTimeFormatter
                             .ofPattern("dd/MM/yyyy HH:mm:ss")

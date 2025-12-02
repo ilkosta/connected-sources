@@ -1,10 +1,6 @@
 package org.connected_sources.notification.service;
 
-import org.connected_sources.notification.core.Channel;
-import org.connected_sources.notification.core.ChannelAdapter;
-import org.connected_sources.notification.core.ChannelAdapterFactory;
-import org.connected_sources.notification.core.RenderedMessage;
-import org.connected_sources.notification.core.SendResult;
+import org.connected_sources.notification.core.*;
 import org.connected_sources.notification.events.EventType;
 import org.connected_sources.notification.incident.DelegatingCategoryResolver;
 import org.connected_sources.notification.incident.RedmineTicketLocator;
@@ -14,17 +10,12 @@ import org.connected_sources.shared.logging.TenantLogger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
-
-import jakarta.mail.internet.MimeMessage;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -139,7 +130,7 @@ public class NotificationDispatcherTest {
         when(categoryResolver.resolve("SMTP_550")).thenReturn(Optional.of("Mail Delivery"));
         when(ticketLocator.findOpenTicket(123, 7, "Mail Delivery")).thenReturn(Optional.of("TICK-77"));
 
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         // attach existing ticket, and schedule another attempt (since attempts not yet exhausted)
         verify(ticketLocator, never()).createTicket(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
@@ -163,7 +154,7 @@ public class NotificationDispatcherTest {
         );
 
         // Run the scheduled retry
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         verify(repo).markFailed(eq("aid-2"), anyString(), eq(false));
     }
@@ -183,7 +174,7 @@ public class NotificationDispatcherTest {
                 Duration.ZERO, EventType.ONBOARDING_ENABLED, false //, "corr-4"
         );
 
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         // Must NOT markFailed due to TTL
         verify(repo, never()).markFailed(eq("aid-3"), anyString(), anyBoolean());
@@ -207,7 +198,7 @@ public class NotificationDispatcherTest {
                 Duration.ofHours(24), EventType.ONBOARDING_REQUESTED, false //, "corr-5"
         );
 
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         verify(ticketLocator, never()).createTicket(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
         verify(repo).attachTicket("aid-4", "TICK-99");
@@ -233,7 +224,7 @@ public class NotificationDispatcherTest {
                 Duration.ofHours(24), EventType.ONBOARDING_REQUESTED, false //, "corr-6"
         );
 
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         verify(ticketLocator).createTicket(eq(123), eq(7), eq("Mail Delivery"),
                 anyString(), anyString(), anyString());
@@ -292,7 +283,7 @@ public class NotificationDispatcherTest {
         assertThat(scheduler.tasks).hasSize(1);
 
         // Eseguiamo il runnable schedulato per forzare la chiamata a adapter.send(...)
-        scheduler.tasks.get(0).runnable.run();
+        scheduler.tasks.getFirst().runnable.run();
 
         ArgumentCaptor<RenderedMessage> msgCaptor = ArgumentCaptor.forClass(RenderedMessage.class);
         verify(adapter).send(msgCaptor.capture());
